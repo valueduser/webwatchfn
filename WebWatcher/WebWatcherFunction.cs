@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Azure.KeyVault;
@@ -41,14 +42,17 @@ namespace WebWatcher
             }
         }
 
-        private static readonly string endDiv = "</div>"; 
-
         private static string _emailAddressTo;
         private static string _sendGridApiKey;
         private static string _blobConnectionString;
+        private static string endDiv = "</div>";
+        private static string lightGreen = "#ccffcc";
+        private static string lightRed = "#ffcccc";
+        private static string nonBreakingSpace = "\x00a0";
+
 
         [FunctionName("WebWatcherFunction")]
-        public static async void Run([TimerTrigger("0 */20 * * * *")]TimerInfo myTimer, ILogger log)
+        public static async void Run([TimerTrigger("0 */30 * * * *")]TimerInfo myTimer, ILogger log)
         {
             log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
@@ -56,48 +60,74 @@ namespace WebWatcher
 
             List<Website> websites = ReadFromBlob(log);
 
-            using (WebClient client = new WebClient())
+            using (HttpClient client = new HttpClient())
             {
-                client.Headers.Add("User-Agent: Other");
-                client.Headers.Add("Accept: */*");
                 foreach (Website site in websites)
                 {
-                    //TODO: find and respect robots.txt
                     if (site.NumberOfFailedAttempts >= 5)
                     {
                         log.LogError($"Too many failed attempts for {site.Url}. Skipping...");
                     }
                     else
                     {
-                        log.LogInformation($"Site: {site.Url}. Old: {site.MostRecentHashValue}.");
+                        //Detect and respect robots
+                        string rootUrl = new Uri(site.Url, UriKind.Absolute).GetLeftPart(UriPartial.Authority);
+                        using (HttpResponseMessage response = client.GetAsync(rootUrl + "/robots.txt").Result)
+                        {
+                            if (response.IsSuccessStatusCode)
+                            {
+                                log.LogInformation($"Detected robots.txt file on {rootUrl}");
+                                //TODO: parse the contents of the file. and filter the urls 
+                                //site.NumberOfFailedAttempts = 5;
+                                //continue;
+                            }
+                        }
+
+                        log.LogInformation($"Site: {site.Url}. Old hash value: {site.MostRecentHashValue}.");
                         try
                         {
-                            byte[] currentHtml = client.DownloadData(site.Url);
-                            string htmlString = ByteArrayToString(currentHtml);
-
-                            string hashedValue = HashWebData(currentHtml);
-                            if (!hashedValue.Equals(site.MostRecentHashValue))
+                            using (HttpResponseMessage response = client.GetAsync(site.Url).Result)
                             {
-                                string message =
-                                    $"Site: {site.Url} has been modified. \nOld hash: {site.MostRecentHashValue} \nNew hash: {hashedValue}. \n\n";
-                                site.MostRecentHashValue = hashedValue;
-                                log.LogDebug($"{DateTime.Now}: {message}");
-
-                                //If the most recent html is empty, then the entire page is an addition. 
-                                if (!String.IsNullOrEmpty(site.MostRecentHtmlContent) && !String.IsNullOrEmpty(htmlString))
+                                if (response.StatusCode == HttpStatusCode.OK)
                                 {
-                                    string htmlDiff = GetHtmlDiffFromPreviousContent(site.MostRecentHtmlContent, htmlString, log);
+                                    using (HttpContent content = response.Content)
+                                    {
+                                        string currentHtml = content.ReadAsStringAsync().Result;
+                                        string hashedValue = HashWebData(currentHtml);
+                                        if (!hashedValue.Equals(site.MostRecentHashValue))
+                                        {
+                                            String test = "there's been a change\n\n";
+                                            string message =
+                                                $"Site: {site.Url} has been modified. \nOld hash: {site.MostRecentHashValue} \nNew hash: {hashedValue}. \n\n";
+                                            message += test;
+                                            site.MostRecentHashValue = hashedValue;
+                                            log.LogDebug($"{DateTime.Now}: {message}");
 
-                                    message += htmlDiff;
+                                            //If the most recent html is empty, then the entire page is an addition. 
+                                            if (!String.IsNullOrEmpty(site.MostRecentHtmlContent) &&
+                                                !String.IsNullOrEmpty(currentHtml))
+                                            {
+                                                string htmlDiff = GetHtmlDiffFromPreviousContent(site.MostRecentHtmlContent,
+                                                    currentHtml, log);
+                                                //TODO: if htmlDiff contains 'nonce', break;
+                                                message += htmlDiff;
+                                            }
+
+                                            site.MostRecentHtmlContent = currentHtml;
+
+                                            SendEmail(log, site.Url, message);
+                                        }
+                                        else
+                                        {
+                                            log.LogInformation($"Nothing changed for site: {site.Url}");
+                                        }
+                                    }
                                 }
-
-                                site.MostRecentHtmlContent = htmlString;
-
-                                SendEmail(log, site.Url, message);
-                            }
-                            else
-                            {
-                                log.LogInformation($"Nothing changed for site: {site.Url}");
+                                else
+                                {
+                                    log.LogWarning($"Possible redirect detected for {site.Url} - Status Code {response.StatusCode}.");
+                                    site.MostRecentHashValue = response.StatusCode.ToString();
+                                }
                             }
                         }
                         catch (System.Net.WebException webException)
@@ -120,7 +150,7 @@ namespace WebWatcher
             string[] currentHtmlArr = currentHtml.Split(
                 new[] { "\r\n", "\r", "\n" },
                 StringSplitOptions.None);
-
+            
             if (previousHtmlArr.Length > 0 && currentHtmlArr.Length > 0)
             {
                 IEnumerable<DiffSection> testsections = Diff.CalculateSections(previousHtmlArr, currentHtmlArr);
@@ -129,26 +159,25 @@ namespace WebWatcher
 
                 htmlDiff.Append("<div style='font-family: courier;'>");
 
-                Func<string, string> filter = delegate (string input)
-                {
-                    return input.Replace(" ", "\x00a0").Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;");
-                };
+                Func<string, string> filter = input =>
+                    input.Replace(" ", nonBreakingSpace).Replace("&", "&amp;").Replace("<", "&lt;")
+                        .Replace(">", "&gt;");
 
                 foreach (var element in elements)
                 {
+                    DiffOperation prevDiffOperation = DiffOperation.Match;
                     switch (element.Operation)
                     {
-                        //TODO: Only match the last N characters so as to avoid spamming the HTML email
                         case DiffOperation.Match:
-                            htmlDiff.Append("<div>\x00a0\x00a0" + filter(element.ElementFromCollection1.Value) + endDiv);
                             break;
+                        //  htmlDiff.Append($"<div>{nonBreakingSpace}{nonBreakingSpace}" + filter(element.ElementFromCollection1.Value) + endDiv);
 
                         case DiffOperation.Insert:
-                            htmlDiff.Append("<div style='background-color: #ccffcc;'>+\x00a0" + filter(element.ElementFromCollection2.Value) + endDiv);
+                            htmlDiff.Append($"<div style='background-color: {lightGreen};'>+{nonBreakingSpace}" + filter(element.ElementFromCollection2.Value) + endDiv);
                             break;
 
                         case DiffOperation.Delete:
-                            htmlDiff.Append("<div style='background-color: #ffcccc;'>-\x00a0" + filter(element.ElementFromCollection1.Value) + endDiv);
+                            htmlDiff.Append($"<div style='background-color: {lightRed};'>-{nonBreakingSpace}" + filter(element.ElementFromCollection1.Value) + endDiv);
                             break;
 
                         case DiffOperation.Replace:
@@ -156,25 +185,35 @@ namespace WebWatcher
                             var sections = Diff.CalculateSections(element.ElementFromCollection1.Value.ToCharArray(), element.ElementFromCollection2.Value.ToCharArray()).ToArray();
                             int ii1 = 0;
                             int ii2 = 0;
-                            htmlDiff.Append("<div>*\x00a0");
+                            htmlDiff.Append($"<div>");
                             foreach (var section in sections)
                             {
-                                if (section.IsMatch)
-                                    htmlDiff.Append(filter(element.ElementFromCollection1.Value.Substring(ii1, section.LengthInCollection1)));
-                                else
+                                if (!section.IsMatch)
                                 {
-                                    htmlDiff.Append("<span style='background-color: #ff8080;'>" + filter(element.ElementFromCollection1.Value.Substring(ii1, section.LengthInCollection1)) + "</span>");
-                                    htmlDiff.Append("<span style='background-color: #ccffcc;'>" + filter(element.ElementFromCollection2.Value.Substring(ii2, section.LengthInCollection2)) + "</span>");
-                                }
+                                    //If the previous section was a match, add some context
+                                    if (prevDiffOperation == DiffOperation.Match && ii1 - 15 > 0)
+                                    {
+                                        htmlDiff.Append($"{ii1 - 15}:");
+                                        htmlDiff.Append(filter(element.ElementFromCollection1.Value.Substring(ii1 - 15, 15)));
 
+                                    }
+                                    htmlDiff.Append($"<span style='background-color: {lightRed};'>" + filter(element.ElementFromCollection1.Value.Substring(ii1, section.LengthInCollection1)) + "</span>");
+                                    htmlDiff.Append($"<span style='background-color: {lightGreen};'>" + filter(element.ElementFromCollection2.Value.Substring(ii2, section.LengthInCollection2)) + "</span>");
+
+                                    //TODO: Add trailing context 
+
+                                    htmlDiff.Append("<br>");
+                                }
+                                
                                 ii1 += section.LengthInCollection1;
                                 ii2 += section.LengthInCollection2;
                             }
-                            htmlDiff.Append("</div>");
+                            htmlDiff.Append(endDiv);
                             break;
                     }
+                    prevDiffOperation = element.Operation;
                 }
-                htmlDiff.Append("</div>");
+                htmlDiff.Append(endDiv);
             }
             else
             {
@@ -182,7 +221,7 @@ namespace WebWatcher
                 log.LogError($"{ DateTime.Now}: {errorText}");
                 htmlDiff.Append("Error: " + errorText);
             }
-
+            
             return htmlDiff.ToString();
         }
 
@@ -196,11 +235,21 @@ namespace WebWatcher
             return hashedValue;
         }
 
+        private static string HashWebData(string data)
+        {
+            string hashedValue;
+            using (var md5 = MD5.Create())
+            {
+                byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(data);
+                hashedValue = ByteArrayToString(md5.ComputeHash(inputBytes));
+            }
+            return hashedValue;
+        }
+
         private static void ReadSecretsFromKeyVault(ILogger log)
         {
             try
             {
-                //SendGridApiKey --TODO: Need to update     
                 var clientId = System.Environment.GetEnvironmentVariable("ClientId");
                 var clientSecret = System.Environment.GetEnvironmentVariable("ClientSecret");
 
@@ -248,7 +297,6 @@ namespace WebWatcher
                 Website website = result.ToObject<Website>();
                 retVal.Add(website);
             }
-
             return retVal;
         }
 
@@ -260,7 +308,7 @@ namespace WebWatcher
                 CloudStorageAccount storageAccount = CloudStorageAccount.Parse(_blobConnectionString);
                 CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
                 CloudBlobContainer container = blobClient.GetContainerReference("webwatcher");
-                retval = container.GetBlockBlobReference("websites2.json");
+                retval = container.GetBlockBlobReference("websites.json");
             }
             catch (Exception ex)
             {
@@ -286,7 +334,7 @@ namespace WebWatcher
             try
             {
                 var client = new SendGridClient(_sendGridApiKey);
-                var from = new EmailAddress("test@example.com", "WebWatcher Notifications"); //TODO: accept in config
+                var from = new EmailAddress("test@example.com", "WebWatcher Notifications");
                 var subject = $"WebWatcher: {siteUrl} has been modified";
                 var to = new EmailAddress(_emailAddressTo);
                 var msg = MailHelper.CreateSingleEmail(from, to, subject, messageBody, messageBody);
