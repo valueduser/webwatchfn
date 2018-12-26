@@ -96,10 +96,8 @@ namespace WebWatcher
                                         string hashedValue = HashWebData(currentHtml);
                                         if (!hashedValue.Equals(site.MostRecentHashValue))
                                         {
-                                            String test = "there's been a change\n\n";
                                             string message =
                                                 $"Site: {site.Url} has been modified. \nOld hash: {site.MostRecentHashValue} \nNew hash: {hashedValue}. \n\n";
-                                            message += test;
                                             site.MostRecentHashValue = hashedValue;
                                             log.LogDebug($"{DateTime.Now}: {message}");
 
