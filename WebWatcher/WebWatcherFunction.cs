@@ -32,6 +32,7 @@ namespace WebWatcher
             public string MostRecentHashValue;
             public string MostRecentHtmlContent;
             public int NumberOfFailedAttempts;
+            public bool IsIgnored;
 
             public Website(string url)
             {
@@ -39,6 +40,7 @@ namespace WebWatcher
                 MostRecentHashValue = String.Empty;
                 MostRecentHtmlContent = String.Empty;
                 NumberOfFailedAttempts = 0;
+                IsIgnored = false;
             }
         }
 
@@ -64,9 +66,9 @@ namespace WebWatcher
             {
                 foreach (Website site in websites)
                 {
-                    if (site.NumberOfFailedAttempts >= 5)
+                    if (site.IsIgnored)
                     {
-                        log.LogError($"Too many failed attempts for {site.Url}. Skipping...");
+                        log.LogError($"Too many failed attempts or page was disabled for {site.Url}. Ignoring...");
                     }
                     else
                     {
@@ -78,7 +80,7 @@ namespace WebWatcher
                             {
                                 log.LogInformation($"Detected robots.txt file on {rootUrl}");
                                 //TODO: parse the contents of the file. and filter the urls 
-                                //site.NumberOfFailedAttempts = 5;
+                                //site.IsIgnored = true;
                                 //continue;
                             }
                         }
@@ -132,6 +134,10 @@ namespace WebWatcher
                         {
                             log.LogWarning($"Error: {webException}. {webException.Message}");
                             site.NumberOfFailedAttempts++;
+                            if(site.NumberOfFailedAttempts >= 5)
+                            {
+                                site.IsIgnored = true;
+                            }
                         }
                     }
                 }
