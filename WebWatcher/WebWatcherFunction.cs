@@ -52,7 +52,6 @@ namespace WebWatcher
         private static string lightRed = "#ffcccc";
         private static string nonBreakingSpace = "\x00a0";
 
-
         [FunctionName("WebWatcherFunction")]
         public static async void Run([TimerTrigger("0 */30 * * * *")]TimerInfo myTimer, ILogger log)
         {
@@ -109,8 +108,11 @@ namespace WebWatcher
                                             {
                                                 string htmlDiff = GetHtmlDiffFromPreviousContent(site.MostRecentHtmlContent,
                                                     currentHtml, log);
-                                                //TODO: if htmlDiff contains 'nonce', break;
-                                                message += htmlDiff;
+                                                if (!htmlDiff.Contains("nonce"))
+                                                {
+                                                    //if htmlDiff contains 'nonce', don't add it to the email body;
+                                                    message += htmlDiff;
+                                                }
                                             }
 
                                             site.MostRecentHtmlContent = currentHtml;
@@ -134,7 +136,7 @@ namespace WebWatcher
                         {
                             log.LogWarning($"Error: {webException}. {webException.Message}");
                             site.NumberOfFailedAttempts++;
-                            if(site.NumberOfFailedAttempts >= 5)
+                            if (site.NumberOfFailedAttempts >= 5)
                             {
                                 site.IsIgnored = true;
                             }
@@ -154,12 +156,11 @@ namespace WebWatcher
             string[] currentHtmlArr = currentHtml.Split(
                 new[] { "\r\n", "\r", "\n" },
                 StringSplitOptions.None);
-            
+
             if (previousHtmlArr.Length > 0 && currentHtmlArr.Length > 0)
             {
                 IEnumerable<DiffSection> testsections = Diff.CalculateSections(previousHtmlArr, currentHtmlArr);
                 IEnumerable<DiffElement<string>> elements = Diff.AlignElements(previousHtmlArr, currentHtmlArr, testsections, new StringSimilarityDiffElementAligner());
-
 
                 htmlDiff.Append("<div style='font-family: courier;'>");
 
@@ -172,10 +173,6 @@ namespace WebWatcher
                     DiffOperation prevDiffOperation = DiffOperation.Match;
                     switch (element.Operation)
                     {
-                        case DiffOperation.Match:
-                            break;
-                        //  htmlDiff.Append($"<div>{nonBreakingSpace}{nonBreakingSpace}" + filter(element.ElementFromCollection1.Value) + endDiv);
-
                         case DiffOperation.Insert:
                             htmlDiff.Append($"<div style='background-color: {lightGreen};'>+{nonBreakingSpace}" + filter(element.ElementFromCollection2.Value) + endDiv);
                             break;
@@ -198,17 +195,15 @@ namespace WebWatcher
                                     if (prevDiffOperation == DiffOperation.Match && ii1 - 15 > 0)
                                     {
                                         htmlDiff.Append($"{ii1 - 15}:");
-                                        htmlDiff.Append(filter(element.ElementFromCollection1.Value.Substring(ii1 - 15, 15)));
 
                                     }
                                     htmlDiff.Append($"<span style='background-color: {lightRed};'>" + filter(element.ElementFromCollection1.Value.Substring(ii1, section.LengthInCollection1)) + "</span>");
                                     htmlDiff.Append($"<span style='background-color: {lightGreen};'>" + filter(element.ElementFromCollection2.Value.Substring(ii2, section.LengthInCollection2)) + "</span>");
 
                                     //TODO: Add trailing context 
-
                                     htmlDiff.Append("<br>");
                                 }
-                                
+
                                 ii1 += section.LengthInCollection1;
                                 ii2 += section.LengthInCollection2;
                             }
@@ -225,18 +220,7 @@ namespace WebWatcher
                 log.LogError($"{ DateTime.Now}: {errorText}");
                 htmlDiff.Append("Error: " + errorText);
             }
-            
             return htmlDiff.ToString();
-        }
-
-        private static string HashWebData(byte[] data)
-        {
-            string hashedValue;
-            using (var md5 = MD5.Create())
-            {
-                hashedValue = ByteArrayToString(md5.ComputeHash(data));
-            }
-            return hashedValue;
         }
 
         private static string HashWebData(string data)
@@ -286,7 +270,6 @@ namespace WebWatcher
 
             blob.UploadTextAsync(websitesElement);
         }
-
 
         private static List<Website> ReadFromBlob(ILogger log)
         {
