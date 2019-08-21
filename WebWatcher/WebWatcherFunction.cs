@@ -5,7 +5,6 @@ using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
-using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage;
@@ -15,7 +14,7 @@ using Newtonsoft.Json.Linq;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using DiffLib;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using Microsoft.Extensions.Configuration;
 
 namespace WebWatcher
 {
@@ -47,22 +46,41 @@ namespace WebWatcher
         private static string _emailAddressTo;
         private static string _sendGridApiKey;
         private static string _blobConnectionString;
-        private static string endDiv = "</div>";
-        private static string lightGreen = "#ccffcc";
-        private static string lightRed = "#ffcccc";
-        private static string nonBreakingSpace = "\x00a0";
+        private static string _containerName;
+       
 
         [FunctionName("WebWatcherFunction")]
-        public static async void Run([TimerTrigger("0 */30 * * * *")]TimerInfo myTimer, ILogger log)
+        public static void Run([TimerTrigger("0 */30 * * * *")]TimerInfo myTimer, ILogger log, ExecutionContext context)
         {
             log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
-            ReadSecretsFromKeyVault(log);
+            log.LogInformation($"Building configuration...{DateTime.Now}");
+
+            var configBuilder = new ConfigurationBuilder()
+                .SetBasePath(context.FunctionAppDirectory)
+                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables();
+
+            var config = configBuilder.Build();
+
+            configBuilder.AddAzureKeyVault(
+                $"https://{config["AzureKeyVault:VaultName"]}.vault.azure.net/",
+                config["AzureKeyVault:ClientId"],
+                config["AzureKeyVault:ClientSecret"]
+            );
+
+            config = configBuilder.Build();
+            
+            _blobConnectionString = config["BlobConnectionString"];
+            _sendGridApiKey = config["SendGridApiKey"];
+            _emailAddressTo = config["EmailTo"];
+            _containerName = config["ContainerName"];
 
             List<Website> websites = ReadFromBlob(log);
 
             using (HttpClient client = new HttpClient())
             {
+                log.LogInformation($"Checking {websites.Count} websites...");
                 foreach (Website site in websites)
                 {
                     if (site.IsIgnored)
@@ -100,7 +118,7 @@ namespace WebWatcher
                                             string message =
                                                 $"Site: {site.Url} has been modified. \nOld hash: {site.MostRecentHashValue} \nNew hash: {hashedValue}. \n\n";
                                             site.MostRecentHashValue = hashedValue;
-                                            log.LogDebug($"{DateTime.Now}: {message}");
+                                            log.LogInformation($"{DateTime.Now}: {message}");
 
                                             //If the most recent html is empty, then the entire page is an addition. 
                                             if (!String.IsNullOrEmpty(site.MostRecentHtmlContent) &&
@@ -165,7 +183,7 @@ namespace WebWatcher
                 htmlDiff.Append("<div style='font-family: courier;'>");
 
                 Func<string, string> filter = input =>
-                    input.Replace(" ", nonBreakingSpace).Replace("&", "&amp;").Replace("<", "&lt;")
+                    input.Replace(" ", Constants.nonBreakingSpace).Replace("&", "&amp;").Replace("<", "&lt;")
                         .Replace(">", "&gt;");
 
                 foreach (var element in elements)
@@ -174,11 +192,11 @@ namespace WebWatcher
                     switch (element.Operation)
                     {
                         case DiffOperation.Insert:
-                            htmlDiff.Append($"<div style='background-color: {lightGreen};'>+{nonBreakingSpace}" + filter(element.ElementFromCollection2.Value) + endDiv);
+                            htmlDiff.Append($"<div style='background-color: {Constants.lightGreen};'>+{Constants.nonBreakingSpace}" + filter(element.ElementFromCollection2.Value) + Constants.endDiv);
                             break;
 
                         case DiffOperation.Delete:
-                            htmlDiff.Append($"<div style='background-color: {lightRed};'>-{nonBreakingSpace}" + filter(element.ElementFromCollection1.Value) + endDiv);
+                            htmlDiff.Append($"<div style='background-color: {Constants.lightRed};'>-{Constants.nonBreakingSpace}" + filter(element.ElementFromCollection1.Value) + Constants.endDiv);
                             break;
 
                         case DiffOperation.Replace:
@@ -197,8 +215,8 @@ namespace WebWatcher
                                         htmlDiff.Append($"{ii1 - 15}:");
 
                                     }
-                                    htmlDiff.Append($"<span style='background-color: {lightRed};'>" + filter(element.ElementFromCollection1.Value.Substring(ii1, section.LengthInCollection1)) + "</span>");
-                                    htmlDiff.Append($"<span style='background-color: {lightGreen};'>" + filter(element.ElementFromCollection2.Value.Substring(ii2, section.LengthInCollection2)) + "</span>");
+                                    htmlDiff.Append($"<span style='background-color: {Constants.lightRed};'>" + filter(element.ElementFromCollection1.Value.Substring(ii1, section.LengthInCollection1)) + "</span>");
+                                    htmlDiff.Append($"<span style='background-color: {Constants.lightGreen};'>" + filter(element.ElementFromCollection2.Value.Substring(ii2, section.LengthInCollection2)) + "</span>");
 
                                     //TODO: Add trailing context 
                                     htmlDiff.Append("<br>");
@@ -207,12 +225,17 @@ namespace WebWatcher
                                 ii1 += section.LengthInCollection1;
                                 ii2 += section.LengthInCollection2;
                             }
-                            htmlDiff.Append(endDiv);
+                            htmlDiff.Append(Constants.endDiv);
+                            break;
+                        case DiffOperation.Match:
+                            break;
+                        default:
+                            log.LogError($"Something went wrong. {element.Operation}");
                             break;
                     }
                     prevDiffOperation = element.Operation;
                 }
-                htmlDiff.Append(endDiv);
+                htmlDiff.Append(Constants.endDiv);
             }
             else
             {
@@ -232,32 +255,6 @@ namespace WebWatcher
                 hashedValue = ByteArrayToString(md5.ComputeHash(inputBytes));
             }
             return hashedValue;
-        }
-
-        private static void ReadSecretsFromKeyVault(ILogger log)
-        {
-            try
-            {
-                var clientId = System.Environment.GetEnvironmentVariable("ClientId");
-                var clientSecret = System.Environment.GetEnvironmentVariable("ClientSecret");
-
-                // Creating the Key Vault client
-                var keyVault = new KeyVaultClient(async (authority, resource, scope) =>
-                {
-                    var authContext = new AuthenticationContext(authority);
-                    var credential = new ClientCredential(clientId, clientSecret);
-                    var token = await authContext.AcquireTokenAsync(resource, credential);
-                    return token.AccessToken;
-                });
-
-                _blobConnectionString = keyVault.GetSecretAsync(System.Environment.GetEnvironmentVariable("KeyVaultUri"), "BlobConnectionString").Result.Value;
-                _sendGridApiKey = keyVault.GetSecretAsync(System.Environment.GetEnvironmentVariable("KeyVaultUri"), "SendGridApiKey").Result.Value;
-                _emailAddressTo = keyVault.GetSecretAsync(System.Environment.GetEnvironmentVariable("KeyVaultUri"), "EmailTo").Result.Value;
-            }
-            catch (Exception ex)
-            {
-                log.LogCritical($"Unable to retrieve secrets from key vault. {ex}");
-            }
         }
 
         private static void WriteToBlob(ILogger log, List<Website> list)
@@ -294,7 +291,7 @@ namespace WebWatcher
             {
                 CloudStorageAccount storageAccount = CloudStorageAccount.Parse(_blobConnectionString);
                 CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
-                CloudBlobContainer container = blobClient.GetContainerReference("webwatcher");
+                CloudBlobContainer container = blobClient.GetContainerReference(_containerName);
                 retval = container.GetBlockBlobReference("websites.json");
             }
             catch (Exception ex)
