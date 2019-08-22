@@ -8,7 +8,6 @@
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.24" />
     <PackageReference Include="Sendgrid" Version="9.10.0" />
     <PackageReference Include="Microsoft.Azure.KeyVault" Version="3.0.2" />
-    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="4.4.1" />
     <PackageReference Include="DiffLib" Version="2017.7.26.1241" />
   </ItemGroup>
   <ItemGroup>
