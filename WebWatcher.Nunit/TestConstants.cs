@@ -1,7 +1,7 @@
 ﻿namespace WebWatcher.Nunit
 {
-	class TestValues
-	{
+	class TestConstants
+    {
 		public const string bigHtmlWithNonce =
 			@"<!DOCTYPE HTML>
 < !--[if IE 7] >< html lang=\'en\' class=\'no-js ie7\'> <![endif]-->
@@ -71,11 +71,11 @@
     <script type = 'text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jquery-migrate/1.4.1/jquery-migrate.min.js?ver=1.4.1'></script>
     <script type = 'text/javascript' >
 		nvar the_ajax_script = {\
-                'ajaxurl\':\'https:\\/\\/MyWebPage.com\\/wp-admin\\/admin-ajax.php\',\'postnonce\':\'996f8ce85a\'};\n/*  */
+                'ajaxurl\':\'https:\\/\\/MyWebPage.com\\/wp-admin\\/admin-ajax.php\',\'postnonce\':\'12345678\'};\n/*  */
     </script>
     <script type = 'text/javascript' >
 		nvar simcal_default_calendar = {\
-                'ajax_url\':\'\\/wp-admin\\/admin-ajax.php\',\'nonce\':\'f45badb6c3\',\'locale\':\'en_US\',\'text_dir\':\'ltr\',\'months\':{\'full\':[\'January\',\'February\',\'March\',\'April\',\'May\',\'June\',\'July\',\'August\',\'September\',\'October\',\'November\',\'December\'],\'short\':[\'Jan\',\'Feb\',\'Mar\',\'Apr\',\'May\',\'Jun\',\'Jul\',\'Aug\',\'Sep\',\'Oct\',\'Nov\',\'Dec\']},\'days\':{\'full\':[\'Sunday\',\'Monday\',\'Tuesday\',\'Wednesday\',\'Thursday\',\'Friday\',\'Saturday\'],\'short\':[\'Sun\',\'Mon\',\'Tue\',\'Wed\',\'Thu\',\'Fri\',\'Sat\']},\'meridiem\':{\'AM\':\'AM\',\'am\':\'am\',\'PM\':\'PM\',\'pm\':\'pm\'}};\nvar simcal_default_calendar = {\'ajax_url\':\'\\/wp-admin\\/admin-ajax.php\',\'nonce\':\'f45badb6c3\',\'locale\':\'en_US\',\'text_dir\':\'ltr\',\'months\':{\'full\':[\'January\',\'February\',\'March\',\'April\',\'May\',\'June\',\'July\',\'August\',\'September\',\'October\',\'November\',\'December\'],\'short\':[\'Jan\',\'Feb\',\'Mar\',\'Apr\',\'May\',\'Jun\',\'Jul\',\'Aug\',\'Sep\',\'Oct\',\'Nov\',\'Dec\']},\'days\':{\'full\':[\'Sunday\',\'Monday\',\'Tuesday\',\'Wednesday\',\'Thursday\',\'Friday\',\'Saturday\'],\'short\':[\'Sun\',\'Mon\',\'Tue\',\'Wed\',\'Thu\',\'Fri\',\'Sat\']},\'meridiem\':{\'AM\':\'AM\',\'am\':\'am\',\'PM\':\'PM\',\'pm\':\'pm\'}};\n/*  */
+                'ajax_url\':\'\\/wp-admin\\/admin-ajax.php\',\'nonce\':\'abcdefgh\',\'locale\':\'en_US\',\'text_dir\':\'ltr\',\'months\':{\'full\':[\'January\',\'February\',\'March\',\'April\',\'May\',\'June\',\'July\',\'August\',\'September\',\'October\',\'November\',\'December\'],\'short\':[\'Jan\',\'Feb\',\'Mar\',\'Apr\',\'May\',\'Jun\',\'Jul\',\'Aug\',\'Sep\',\'Oct\',\'Nov\',\'Dec\']},\'days\':{\'full\':[\'Sunday\',\'Monday\',\'Tuesday\',\'Wednesday\',\'Thursday\',\'Friday\',\'Saturday\'],\'short\':[\'Sun\',\'Mon\',\'Tue\',\'Wed\',\'Thu\',\'Fri\',\'Sat\']},\'meridiem\':{\'AM\':\'AM\',\'am\':\'am\',\'PM\':\'PM\',\'pm\':\'pm\'}};\nvar simcal_default_calendar = {\'ajax_url\':\'\\/wp-admin\\/admin-ajax.php\',\'nonce\':\'abcdefgh\',\'locale\':\'en_US\',\'text_dir\':\'ltr\',\'months\':{\'full\':[\'January\',\'February\',\'March\',\'April\',\'May\',\'June\',\'July\',\'August\',\'September\',\'October\',\'November\',\'December\'],\'short\':[\'Jan\',\'Feb\',\'Mar\',\'Apr\',\'May\',\'Jun\',\'Jul\',\'Aug\',\'Sep\',\'Oct\',\'Nov\',\'Dec\']},\'days\':{\'full\':[\'Sunday\',\'Monday\',\'Tuesday\',\'Wednesday\',\'Thursday\',\'Friday\',\'Saturday\'],\'short\':[\'Sun\',\'Mon\',\'Tue\',\'Wed\',\'Thu\',\'Fri\',\'Sat\']},\'meridiem\':{\'AM\':\'AM\',\'am\':\'am\',\'PM\':\'PM\',\'pm\':\'pm\'}};\n/*  */
     </script>
 </body>
 
@@ -150,18 +150,18 @@
     <script type = 'text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jquery-migrate/1.4.1/jquery-migrate.min.js?ver=1.4.1'></script>
     <script type = 'text/javascript' >
 		nvar the_ajax_script = {\
-                'ajaxurl\':\'https:\\/\\/MyWebPage.com\\/wp-admin\\/admin-ajax.php\',\'postnonce\':\'996f8ce85a\'};\n/*  */
+                'ajaxurl\':\'https:\\/\\/MyWebPage.com\\/wp-admin\\/admin-ajax.php\',\'postnonce\':\'12345678\'};\n/*  */
     </script>
     <script type = 'text/javascript' >
 		nvar simcal_default_calendar = {\
-                'ajax_url\':\'\\/wp-admin\\/admin-ajax.php\',\'nonce\':\'f45badb6c3\',\'locale\':\'en_US\',\'text_dir\':\'ltr\',\'months\':{\'full\':[\'January\',\'February\',\'March\',\'April\',\'May\',\'June\',\'July\',\'August\',\'September\',\'October\',\'November\',\'December\'],\'short\':[\'Jan\',\'Feb\',\'Mar\',\'Apr\',\'May\',\'Jun\',\'Jul\',\'Aug\',\'Sep\',\'Oct\',\'Nov\',\'Dec\']},\'days\':{\'full\':[\'Sunday\',\'Monday\',\'Tuesday\',\'Wednesday\',\'Thursday\',\'Friday\',\'Saturday\'],\'short\':[\'Sun\',\'Mon\',\'Tue\',\'Wed\',\'Thu\',\'Fri\',\'Sat\']},\'meridiem\':{\'AM\':\'AM\',\'am\':\'am\',\'PM\':\'PM\',\'pm\':\'pm\'}};\nvar simcal_default_calendar = {\'ajax_url\':\'\\/wp-admin\\/admin-ajax.php\',\'nonce\':\'f45badb6c3\',\'locale\':\'en_US\',\'text_dir\':\'ltr\',\'months\':{\'full\':[\'January\',\'February\',\'March\',\'April\',\'May\',\'June\',\'July\',\'August\',\'September\',\'October\',\'November\',\'December\'],\'short\':[\'Jan\',\'Feb\',\'Mar\',\'Apr\',\'May\',\'Jun\',\'Jul\',\'Aug\',\'Sep\',\'Oct\',\'Nov\',\'Dec\']},\'days\':{\'full\':[\'Sunday\',\'Monday\',\'Tuesday\',\'Wednesday\',\'Thursday\',\'Friday\',\'Saturday\'],\'short\':[\'Sun\',\'Mon\',\'Tue\',\'Wed\',\'Thu\',\'Fri\',\'Sat\']},\'meridiem\':{\'AM\':\'AM\',\'am\':\'am\',\'PM\':\'PM\',\'pm\':\'pm\'}};\n/*  */
+                'ajax_url\':\'\\/wp-admin\\/admin-ajax.php\',\'nonce\':\'abcdefgh\',\'locale\':\'en_US\',\'text_dir\':\'ltr\',\'months\':{\'full\':[\'January\',\'February\',\'March\',\'April\',\'May\',\'June\',\'July\',\'August\',\'September\',\'October\',\'November\',\'December\'],\'short\':[\'Jan\',\'Feb\',\'Mar\',\'Apr\',\'May\',\'Jun\',\'Jul\',\'Aug\',\'Sep\',\'Oct\',\'Nov\',\'Dec\']},\'days\':{\'full\':[\'Sunday\',\'Monday\',\'Tuesday\',\'Wednesday\',\'Thursday\',\'Friday\',\'Saturday\'],\'short\':[\'Sun\',\'Mon\',\'Tue\',\'Wed\',\'Thu\',\'Fri\',\'Sat\']},\'meridiem\':{\'AM\':\'AM\',\'am\':\'am\',\'PM\':\'PM\',\'pm\':\'pm\'}};\nvar simcal_default_calendar = {\'ajax_url\':\'\\/wp-admin\\/admin-ajax.php\',\'nonce\':\'abcdefgh\',\'locale\':\'en_US\',\'text_dir\':\'ltr\',\'months\':{\'full\':[\'January\',\'February\',\'March\',\'April\',\'May\',\'June\',\'July\',\'August\',\'September\',\'October\',\'November\',\'December\'],\'short\':[\'Jan\',\'Feb\',\'Mar\',\'Apr\',\'May\',\'Jun\',\'Jul\',\'Aug\',\'Sep\',\'Oct\',\'Nov\',\'Dec\']},\'days\':{\'full\':[\'Sunday\',\'Monday\',\'Tuesday\',\'Wednesday\',\'Thursday\',\'Friday\',\'Saturday\'],\'short\':[\'Sun\',\'Mon\',\'Tue\',\'Wed\',\'Thu\',\'Fri\',\'Sat\']},\'meridiem\':{\'AM\':\'AM\',\'am\':\'am\',\'PM\':\'PM\',\'pm\':\'pm\'}};\n/*  */
     </script>
 </body>
 
 </html>";
 
 		public const string bigHtmlWithDifferentNonce =
-			@"<!DOCTYPE HTML>
+                    @"<!DOCTYPE HTML>
 < !--[if IE 7] >< html lang=\'en\' class=\'no-js ie7\'> <![endif]-->
 <!--[if IE 8 ]><html lang =\'en\' class=\'no-js ie8\'> <![endif]-->
 <!--[if IE 9 ]><html lang =\'en\' class=\'no-js ie9\'> <![endif]-->
@@ -229,14 +229,14 @@
     <script type = 'text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jquery-migrate/1.4.1/jquery-migrate.min.js?ver=1.4.1'></script>
     <script type = 'text/javascript' >
 		nvar the_ajax_script = {\
-                'ajaxurl\':\'https:\\/\\/MyWebPage.com\\/wp-admin\\/admin-ajax.php\',\'postnonce\':\'1234567\'};\n/*  */
+                'ajaxurl\':\'https:\\/\\/MyWebPage.com\\/wp-admin\\/admin-ajax.php\',\'postnonce\':\'01234567\'};\n/*  */
     </script>
     <script type = 'text/javascript' >
 		nvar simcal_default_calendar = {\
-                'ajax_url\':\'\\/wp-admin\\/admin-ajax.php\',\'nonce\':\'asdfjkl\',\'locale\':\'en_US\',\'text_dir\':\'ltr\',\'months\':{\'full\':[\'January\',\'February\',\'March\',\'April\',\'May\',\'June\',\'July\',\'August\',\'September\',\'October\',\'November\',\'December\'],\'short\':[\'Jan\',\'Feb\',\'Mar\',\'Apr\',\'May\',\'Jun\',\'Jul\',\'Aug\',\'Sep\',\'Oct\',\'Nov\',\'Dec\']},\'days\':{\'full\':[\'Sunday\',\'Monday\',\'Tuesday\',\'Wednesday\',\'Thursday\',\'Friday\',\'Saturday\'],\'short\':[\'Sun\',\'Mon\',\'Tue\',\'Wed\',\'Thu\',\'Fri\',\'Sat\']},\'meridiem\':{\'AM\':\'AM\',\'am\':\'am\',\'PM\':\'PM\',\'pm\':\'pm\'}};\nvar simcal_default_calendar = {\'ajax_url\':\'\\/wp-admin\\/admin-ajax.php\',\'nonce\':\'asdfjkl\',\'locale\':\'en_US\',\'text_dir\':\'ltr\',\'months\':{\'full\':[\'January\',\'February\',\'March\',\'April\',\'May\',\'June\',\'July\',\'August\',\'September\',\'October\',\'November\',\'December\'],\'short\':[\'Jan\',\'Feb\',\'Mar\',\'Apr\',\'May\',\'Jun\',\'Jul\',\'Aug\',\'Sep\',\'Oct\',\'Nov\',\'Dec\']},\'days\':{\'full\':[\'Sunday\',\'Monday\',\'Tuesday\',\'Wednesday\',\'Thursday\',\'Friday\',\'Saturday\'],\'short\':[\'Sun\',\'Mon\',\'Tue\',\'Wed\',\'Thu\',\'Fri\',\'Sat\']},\'meridiem\':{\'AM\':\'AM\',\'am\':\'am\',\'PM\':\'PM\',\'pm\':\'pm\'}};\n/*  */
+                'ajax_url\':\'\\/wp-admin\\/admin-ajax.php\',\'nonce\':\'absdfjkl\',\'locale\':\'en_US\',\'text_dir\':\'ltr\',\'months\':{\'full\':[\'January\',\'February\',\'March\',\'April\',\'May\',\'June\',\'July\',\'August\',\'September\',\'October\',\'November\',\'December\'],\'short\':[\'Jan\',\'Feb\',\'Mar\',\'Apr\',\'May\',\'Jun\',\'Jul\',\'Aug\',\'Sep\',\'Oct\',\'Nov\',\'Dec\']},\'days\':{\'full\':[\'Sunday\',\'Monday\',\'Tuesday\',\'Wednesday\',\'Thursday\',\'Friday\',\'Saturday\'],\'short\':[\'Sun\',\'Mon\',\'Tue\',\'Wed\',\'Thu\',\'Fri\',\'Sat\']},\'meridiem\':{\'AM\':\'AM\',\'am\':\'am\',\'PM\':\'PM\',\'pm\':\'pm\'}};\nvar simcal_default_calendar = {\'ajax_url\':\'\\/wp-admin\\/admin-ajax.php\',\'nonce\':\'abcdefgh\',\'locale\':\'en_US\',\'text_dir\':\'ltr\',\'months\':{\'full\':[\'January\',\'February\',\'March\',\'April\',\'May\',\'June\',\'July\',\'August\',\'September\',\'October\',\'November\',\'December\'],\'short\':[\'Jan\',\'Feb\',\'Mar\',\'Apr\',\'May\',\'Jun\',\'Jul\',\'Aug\',\'Sep\',\'Oct\',\'Nov\',\'Dec\']},\'days\':{\'full\':[\'Sunday\',\'Monday\',\'Tuesday\',\'Wednesday\',\'Thursday\',\'Friday\',\'Saturday\'],\'short\':[\'Sun\',\'Mon\',\'Tue\',\'Wed\',\'Thu\',\'Fri\',\'Sat\']},\'meridiem\':{\'AM\':\'AM\',\'am\':\'am\',\'PM\':\'PM\',\'pm\':\'pm\'}};\n/*  */
     </script>
 </body>
 
 </html>";
-	}
+    }
 }

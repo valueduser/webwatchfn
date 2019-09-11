@@ -43,6 +43,40 @@ namespace WebWatcher
             }
         }
 
+        public class WebDiff
+        {
+            public string Collection1 { get; set; } = String.Empty;
+            public string Collection2 { get; set; } = String.Empty;
+            public DiffOperation DiffOperation { get; set; }
+
+            public WebDiff(DiffOperation diffOperation, string collection1, string collection2)
+            {
+                DiffOperation = diffOperation;
+                Collection1 = collection1;
+                Collection2 = collection2;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (obj == null || GetType() != obj.GetType())
+                {
+                    return false;
+                }
+
+                WebDiff objresult = (WebDiff)obj;
+
+                return
+                    DiffOperation == objresult.DiffOperation &&
+                    String.Equals(Collection1, objresult.Collection1) &&
+                    String.Equals(Collection2, objresult.Collection2);
+            }
+
+            public override int GetHashCode()
+            {
+                return base.GetHashCode();
+            }
+        }
+
         private static string _emailAddressTo;
         private static string _sendGridApiKey;
         private static string _blobConnectionString;
@@ -124,12 +158,14 @@ namespace WebWatcher
                                             if (!String.IsNullOrEmpty(site.MostRecentHtmlContent) &&
                                                 !String.IsNullOrEmpty(currentHtml))
                                             {
-                                                string htmlDiff = GetHtmlDiffFromPreviousContent(site.MostRecentHtmlContent,
+                                                GetDiff(site.MostRecentHtmlContent,
                                                     currentHtml, log);
+                                                // string htmlDiff = GetDiff(site.MostRecentHtmlContent,
+                                                //     currentHtml, log);
                                                 // if (!htmlDiff.Contains("nonce"))
                                                 // {
                                                     //if htmlDiff contains 'nonce', don't add it to the email body;
-                                                    message += htmlDiff;
+                                                    // message += htmlDiff;
                                                 // }
                                             }
 
@@ -165,9 +201,9 @@ namespace WebWatcher
             WriteToBlob(log, websites);
         }
 
-        public static string GetHtmlDiffFromPreviousContent(string previousHtml, string currentHtml, ILogger log)
+        public static List<WebDiff> GetDiff(string previousHtml, string currentHtml, ILogger log)
         {
-            var htmlDiff = new StringBuilder();
+            // var htmlDiff = new StringBuilder();
             string[] previousHtmlArr = previousHtml.Split(
                 new[] { "\r\n", "\r", "\n" },
                 StringSplitOptions.None);
@@ -175,12 +211,14 @@ namespace WebWatcher
                 new[] { "\r\n", "\r", "\n" },
                 StringSplitOptions.None);
 
+            List<WebDiff> diffCollection = new List<WebDiff>();
+
             if (previousHtmlArr.Length > 0 && currentHtmlArr.Length > 0)
             {
                 IEnumerable<DiffSection> testsections = Diff.CalculateSections(previousHtmlArr, currentHtmlArr);
                 IEnumerable<DiffElement<string>> elements = Diff.AlignElements(previousHtmlArr, currentHtmlArr, testsections, new StringSimilarityDiffElementAligner());
 
-                htmlDiff.Append("<div style='font-family: courier;'>");
+                // htmlDiff.Append("<div style='font-family: courier;'>");
 
                 Func<string, string> filter = input =>
                     input.Replace(" ", Constants.nonBreakingSpace)
@@ -197,38 +235,48 @@ namespace WebWatcher
                     switch (element.Operation)
                     {
                         case DiffOperation.Insert:
-                            htmlDiff.Append($"<div style='background-color: {Constants.lightGreen};'>+{Constants.nonBreakingSpace}" + filter(element.ElementFromCollection2.Value) + Constants.endDiv);
+                            diffCollection.Add(new WebDiff(element.Operation, String.Empty, filter(element.ElementFromCollection2.Value)));
+                            // htmlDiff.Append($"<div style='background-color: {Constants.lightGreen};'>+{Constants.nonBreakingSpace}" + filter(element.ElementFromCollection2.Value) + Constants.endDiv);
                             break;
                         case DiffOperation.Delete:
-                            htmlDiff.Append($"<div style='background-color: {Constants.lightRed};'>-{Constants.nonBreakingSpace}" + filter(element.ElementFromCollection1.Value) + Constants.endDiv);
+                            diffCollection.Add(new WebDiff(element.Operation, filter(element.ElementFromCollection1.Value), String.Empty));
+                            // htmlDiff.Append($"<div style='background-color: {Constants.lightRed};'>-{Constants.nonBreakingSpace}" + filter(element.ElementFromCollection1.Value) + Constants.endDiv);
                             break;
                         case DiffOperation.Replace:
                         case DiffOperation.Modify:
                             int ii1 = 0;
                             int ii2 = 0;
-                            htmlDiff.Append(Constants.beginDiv);
+                            // htmlDiff.Append(Constants.beginDiv);
                             IEnumerable<DiffSection> sections = Diff.CalculateSections(element.ElementFromCollection1.Value.ToCharArray(), element.ElementFromCollection2.Value.ToCharArray()).ToArray();
                             foreach (var section in sections)
                             {
                                 if (!section.IsMatch)
                                 {
-                                    htmlDiff.Append($"{element.Operation}: {element.ElementFromCollection1.Value} vs {element.ElementFromCollection2.Value} ({element.ElementIndexFromCollection1.Value} vs {element.ElementIndexFromCollection2.Value})");
+                                    //DEBUG
+                                    // htmlDiff.Append($"{element.Operation}: {element.ElementFromCollection1.Value} vs {element.ElementFromCollection2.Value} ({element.ElementIndexFromCollection1.Value} vs {element.ElementIndexFromCollection2.Value})");
+                                    diffCollection.Add(new WebDiff(
+                                        element.Operation,
+                                        filter(element.ElementFromCollection1.Value.Substring(ii1, section.LengthInCollection1)),
+                                        filter(element.ElementFromCollection2.Value.Substring(ii2, section.LengthInCollection2))
+                                     ));
+
                                     //If the previous section was a match, add some context
                                     if (prevDiffOperation == DiffOperation.Match && ii1 - 15 > 0)
                                     {
-                                        htmlDiff.Append($"{ii1 - 15}:");
+                                        // htmlDiff.Append($"{ii1 - 15}:");
                                     }
-                                    htmlDiff.Append($"<span style='background-color: {Constants.lightRed};'>" + filter(element.ElementFromCollection1.Value.Substring(ii1, section.LengthInCollection1)) + Constants.endSpan);
-                                    htmlDiff.Append($"<span style='background-color: {Constants.lightGreen};'>" + filter(element.ElementFromCollection2.Value.Substring(ii2, section.LengthInCollection2)) + Constants.endSpan);
+                                    // htmlDiff.Append($"<span style='background-color: {Constants.lightRed};'>" + filter(element.ElementFromCollection1.Value.Substring(ii1, section.LengthInCollection1)) + Constants.endSpan);
+                                    // htmlDiff.Append($"<span style='background-color: {Constants.lightGreen};'>" + filter(element.ElementFromCollection2.Value.Substring(ii2, section.LengthInCollection2)) + Constants.endSpan);
 
                                     //TODO: Add trailing context 
-                                    htmlDiff.Append("<br>");
+                                    // htmlDiff.Append("<br>");
                                 }
 
                                 ii1 += section.LengthInCollection1;
                                 ii2 += section.LengthInCollection2;
                             }
-                            htmlDiff.Append(Constants.endDiv);
+
+                            // htmlDiff.Append(Constants.endDiv);
                             break;
                         case DiffOperation.Match:
                             break;
@@ -238,15 +286,16 @@ namespace WebWatcher
                     }
                     prevDiffOperation = element.Operation;
                 }
-                htmlDiff.Append(Constants.endDiv);
+                // htmlDiff.Append(Constants.endDiv);
             }
             else
             {
                 string errorText = $"Unable to calculate diff. Previous HTML split length: {previousHtmlArr.Length}. Current HTML split length: {currentHtmlArr.Length}";
                 log.LogError($"{ DateTime.Now}: {errorText}");
-                htmlDiff.Append("Error: " + errorText);
+                // htmlDiff.Append("Error: " + errorText);
             }
-            return htmlDiff.ToString();
+            // return htmlDiff.ToString();
+            return diffCollection;
         }
 
         private static string HashWebData(string data)

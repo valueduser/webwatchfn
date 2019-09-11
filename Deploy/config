@@ -4,5 +4,6 @@ appID:
 password: 
 tenant: 
 pathToFile: 
+functionProjectLocation: 
 emailTo: 
 sendGridKey: 

@@ -12,6 +12,7 @@ dt=$(date '+%Y%m%d%H%M');
 
 resourceGroupName="webwatcher"$dt
 storageAccountName="blob"$dt
+fnStorageAccountName="fnsto"$dt
 functionAppName="watch"$dt
 keyvaultName="kv"$dt
 blobName="blob"$dt
@@ -20,6 +21,8 @@ containerName="container"$dt
 echo "Creating Azure resources..."
 
 az login --service-principal -u $appID --password $password --tenant $tenant
+
+az account set --subscription $subscription
 
 echo "Creating resource group" $resourceGroupName"..."
 az group create --name $resourceGroupName --location $location
@@ -79,30 +82,41 @@ az storage blob upload --container-name $containerName \
   --name $"websites.json"
 
 echo "Creating function app" $functionAppName
+az storage account create  \
+  --name $fnStorageAccountName  \
+  --resource-group $resourceGroupName \
+  --location $location \
+  --sku Standard_LRS \
+  --subscription $subscription
+
 az functionapp create \
   --name $functionAppName  \
-  --storage-account $storageAccountName  \
+  --storage-account $fnStorageAccountName  \
   --consumption-plan-location $location \
+  --runtime dotnet \
   --resource-group $resourceGroupName 
+
+echo "Building and publishing the function project" $functionProjectLocation"/WebWatcher.csproj..."
+dotnet build $functionProjectLocation"/WebWatcher.csproj" --configuration Release
+dotnet publish $functionProjectLocation"/WebWatcher.csproj" --configuration Release
+cd $functionProjectLocation"/bin/Release/netcoreapp2.1"
+zip -r ${functionAppName}.zip *
+
+az functionapp deployment source config-zip \
+  --name $functionAppName \
+  --resource-group $resourceGroupName \
+  --src $functionAppName.zip
+  
+
+
+
+
+
+echo "Cleaning up "${functionAppName}".zip..."
+rm ${functionAppName}.zip
+
 
 # az functionapp config appsettings set \
 #   --name $functionAppName \
 #   --resource-group $resourceGroupName \
 #   --settings StorageConStr=$connectionString
-
-# publish the code
-# dotnet publish -c Release
-# $publishFolder = "FunctionsDemo/bin/Release/netcoreapp2.1/publish"
-
-# create the zip
-# $publishZip = "publish.zip"
-# if(Test-path $publishZip) {Remove-item $publishZip}
-# Add-Type -assembly "system.io.compression.filesystem"
-# [io.compression.zipfile]::CreateFromDirectory($publishFolder, $publishZip)
-
-# deploy the zipped package
-# az functionapp deployment source config-zip \
-  # --name $functionAppName \
-  # --resource-group $resourceGroupName \
-#  --src $publishZip
-
