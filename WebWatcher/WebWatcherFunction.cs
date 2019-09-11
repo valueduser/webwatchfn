@@ -126,11 +126,11 @@ namespace WebWatcher
                                             {
                                                 string htmlDiff = GetHtmlDiffFromPreviousContent(site.MostRecentHtmlContent,
                                                     currentHtml, log);
-                                                if (!htmlDiff.Contains("nonce"))
-                                                {
+                                                // if (!htmlDiff.Contains("nonce"))
+                                                // {
                                                     //if htmlDiff contains 'nonce', don't add it to the email body;
                                                     message += htmlDiff;
-                                                }
+                                                // }
                                             }
 
                                             site.MostRecentHtmlContent = currentHtml;
@@ -188,35 +188,36 @@ namespace WebWatcher
 
                 foreach (var element in elements)
                 {
+                    log.LogInformation($"Diff eval: {element.ElementFromCollection2.Value}");
                     DiffOperation prevDiffOperation = DiffOperation.Match;
+                    log.LogInformation($"{element.Operation}: {element.ElementFromCollection1.Value} vs {element.ElementFromCollection2.Value} ({element.ElementIndexFromCollection1.Value} vs {element.ElementIndexFromCollection2.Value})");
+                    
                     switch (element.Operation)
                     {
                         case DiffOperation.Insert:
                             htmlDiff.Append($"<div style='background-color: {Constants.lightGreen};'>+{Constants.nonBreakingSpace}" + filter(element.ElementFromCollection2.Value) + Constants.endDiv);
                             break;
-
                         case DiffOperation.Delete:
                             htmlDiff.Append($"<div style='background-color: {Constants.lightRed};'>-{Constants.nonBreakingSpace}" + filter(element.ElementFromCollection1.Value) + Constants.endDiv);
                             break;
-
                         case DiffOperation.Replace:
                         case DiffOperation.Modify:
-                            var sections = Diff.CalculateSections(element.ElementFromCollection1.Value.ToCharArray(), element.ElementFromCollection2.Value.ToCharArray()).ToArray();
                             int ii1 = 0;
                             int ii2 = 0;
-                            htmlDiff.Append($"<div>");
+                            htmlDiff.Append(Constants.beginDiv);
+                            IEnumerable<DiffSection> sections = Diff.CalculateSections(element.ElementFromCollection1.Value.ToCharArray(), element.ElementFromCollection2.Value.ToCharArray()).ToArray();
                             foreach (var section in sections)
                             {
                                 if (!section.IsMatch)
                                 {
+                                    htmlDiff.Append($"{element.Operation}: {element.ElementFromCollection1.Value} vs {element.ElementFromCollection2.Value} ({element.ElementIndexFromCollection1.Value} vs {element.ElementIndexFromCollection2.Value})");
                                     //If the previous section was a match, add some context
                                     if (prevDiffOperation == DiffOperation.Match && ii1 - 15 > 0)
                                     {
                                         htmlDiff.Append($"{ii1 - 15}:");
-
                                     }
-                                    htmlDiff.Append($"<span style='background-color: {Constants.lightRed};'>" + filter(element.ElementFromCollection1.Value.Substring(ii1, section.LengthInCollection1)) + "</span>");
-                                    htmlDiff.Append($"<span style='background-color: {Constants.lightGreen};'>" + filter(element.ElementFromCollection2.Value.Substring(ii2, section.LengthInCollection2)) + "</span>");
+                                    htmlDiff.Append($"<span style='background-color: {Constants.lightRed};'>" + filter(element.ElementFromCollection1.Value.Substring(ii1, section.LengthInCollection1)) + Constants.endSpan);
+                                    htmlDiff.Append($"<span style='background-color: {Constants.lightGreen};'>" + filter(element.ElementFromCollection2.Value.Substring(ii2, section.LengthInCollection2)) + Constants.endSpan);
 
                                     //TODO: Add trailing context 
                                     htmlDiff.Append("<br>");
