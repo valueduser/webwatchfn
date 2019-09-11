@@ -165,7 +165,7 @@ namespace WebWatcher
             WriteToBlob(log, websites);
         }
 
-        private static string GetHtmlDiffFromPreviousContent(string previousHtml, string currentHtml, ILogger log)
+        public static string GetHtmlDiffFromPreviousContent(string previousHtml, string currentHtml, ILogger log)
         {
             var htmlDiff = new StringBuilder();
             string[] previousHtmlArr = previousHtml.Split(
@@ -183,7 +183,9 @@ namespace WebWatcher
                 htmlDiff.Append("<div style='font-family: courier;'>");
 
                 Func<string, string> filter = input =>
-                    input.Replace(" ", Constants.nonBreakingSpace).Replace("&", "&amp;").Replace("<", "&lt;")
+                    input.Replace(" ", Constants.nonBreakingSpace)
+                        .Replace("&", "&amp;")
+                        .Replace("<", "&lt;")
                         .Replace(">", "&gt;");
 
                 foreach (var element in elements)
@@ -262,8 +264,8 @@ namespace WebWatcher
         {
             CloudBlockBlob blob = GetBlobConnection(log);
 
-            RootObject root = new RootObject();
-            root.websites = list;
+            RootObject root = new RootObject { websites = list};
+
             string websitesElement = JsonConvert.SerializeObject(root);
 
             blob.UploadTextAsync(websitesElement);
