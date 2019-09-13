@@ -17,6 +17,7 @@ functionAppName="watch"$dt
 keyvaultName="kv"$dt
 blobName="blob"$dt
 containerName="container"$dt
+servicePrincipalName="sp"$dt
 
 echo "Creating Azure resources..."
 
@@ -88,7 +89,6 @@ az storage account create  \
   --location $location \
   --sku Standard_LRS \
   --subscription $subscription
-
 az functionapp create \
   --name $functionAppName  \
   --storage-account $fnStorageAccountName  \
@@ -102,21 +102,18 @@ dotnet publish $functionProjectLocation"/WebWatcher.csproj" --configuration Rele
 cd $functionProjectLocation"/bin/Release/netcoreapp2.1"
 zip -r ${functionAppName}.zip *
 
+echo "Deploying function project..."
 az functionapp deployment source config-zip \
   --name $functionAppName \
   --resource-group $resourceGroupName \
   --src $functionAppName.zip
   
-
-
-
-
-
 echo "Cleaning up "${functionAppName}".zip..."
 rm ${functionAppName}.zip
 
+az functionapp config appsettings set \
+  --name $functionAppName \
+  --resource-group $resourceGroupName \
+  --settings AzureKeyVault:ClientId=$appID AzureKeyVault:ClientSecret=$password AzureKeyVault:VaultName=$keyvaultName WEBSITE_RUN_FROM_PACKAGE=1
 
-# az functionapp config appsettings set \
-#   --name $functionAppName \
-#   --resource-group $resourceGroupName \
-#   --settings StorageConStr=$connectionString
+echo "Done!"
