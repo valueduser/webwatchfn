@@ -89,6 +89,7 @@ az storage account create  \
   --location $location \
   --sku Standard_LRS \
   --subscription $subscription
+  
 az functionapp create \
   --name $functionAppName  \
   --storage-account $fnStorageAccountName  \
@@ -97,16 +98,17 @@ az functionapp create \
   --resource-group $resourceGroupName 
 
 echo "Building and publishing the function project" $functionProjectLocation"/WebWatcher.csproj..."
-dotnet build $functionProjectLocation"/WebWatcher.csproj" --configuration Release
-dotnet publish $functionProjectLocation"/WebWatcher.csproj" --configuration Release
-cd $functionProjectLocation"/bin/Release/netcoreapp2.1"
+dotnet build $functionProjectLocation --configuration Release
+dotnet publish $functionProjectLocation --configuration Release --output bin/publish
+cd bin/publish #$functionProjectLocation"/bin/Release/netcoreapp2.1/publish/"
 zip -r ${functionAppName}.zip *
 
 echo "Deploying function project..."
 az functionapp deployment source config-zip \
   --name $functionAppName \
   --resource-group $resourceGroupName \
-  --src $functionAppName.zip
+  --src $functionAppName.zip \
+  --debug
   
 echo "Cleaning up "${functionAppName}".zip..."
 rm ${functionAppName}.zip
