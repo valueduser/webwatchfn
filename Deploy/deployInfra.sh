@@ -14,6 +14,7 @@ resourceGroupName="webwatcher"$dt
 storageAccountName="blob"$dt
 fnStorageAccountName="fnsto"$dt
 functionAppName="watch"$dt
+functionContainer="function"$dt
 keyvaultName="kv"$dt
 blobName="blob"$dt
 containerName="container"$dt
@@ -47,7 +48,7 @@ az storage account create  \
   --subscription $subscription
 
 echo "Retrieving connection string..."
-connectionString=$(az storage account show-connection-string --name $storageAccountName --resource-group $resourceGroupName --subscription $subscription --output tsv)
+connectionString=`az storage account show-connection-string --name $storageAccountName --resource-group $resourceGroupName --output tsv`
 
 echo "Populating key vault..."
 az keyvault secret set \
@@ -89,7 +90,7 @@ az storage account create  \
   --location $location \
   --sku Standard_LRS \
   --subscription $subscription
-  
+
 az functionapp create \
   --name $functionAppName  \
   --storage-account $fnStorageAccountName  \
@@ -99,23 +100,47 @@ az functionapp create \
 
 echo "Building and publishing the function project" $functionProjectLocation"/WebWatcher.csproj..."
 dotnet build $functionProjectLocation --configuration Release
-dotnet publish $functionProjectLocation --configuration Release --output bin/publish
-cd bin/publish #$functionProjectLocation"/bin/Release/netcoreapp2.1/publish/"
-zip -r ${functionAppName}.zip *
+cd $functionProjectLocation"/bin/Release/netcoreapp2.1/"
+zip -r $functionAppName.zip * 
 
-echo "Deploying function project..."
-az functionapp deployment source config-zip \
-  --name $functionAppName \
-  --resource-group $resourceGroupName \
-  --src $functionAppName.zip \
-  --debug
+az storage container create \
+  --name $functionContainer \
+  --public-access off \
+  --connection-string $connectionString
+
+az storage container create \
+  --name $functionContainer \
+  --public-access off \
+  --connection-string $connectionString
+
+echo "Uploading function zip to blob"
+az storage blob upload --container-name $functionContainer \
+  --file $functionAppName.zip \
+  --connection-string $connectionString \
+  --name $functionAppName.zip
+
+format='+%Y-%m-%dT%H:%M:%SZ'
+start=`date -v-24H ${format}`
+end=`date -v+8760H ${format}`
+
+sas=`az storage account generate-sas \
+  --permissions rl \
+  --connection-string $connectionString \
+  --expiry $end \
+  --start $start \
+  --resource-types sco \
+  --services b \
+  --output tsv`
+sas="${sas//%3A/:}"
   
 echo "Cleaning up "${functionAppName}".zip..."
 rm ${functionAppName}.zip
 
+packageLocation="https://$storageAccountName.blob.core.windows.net/$functionContainer/$functionAppName.zip?$sas"
+
 az functionapp config appsettings set \
   --name $functionAppName \
   --resource-group $resourceGroupName \
-  --settings AzureKeyVault:ClientId=$appID AzureKeyVault:ClientSecret=$password AzureKeyVault:VaultName=$keyvaultName WEBSITE_RUN_FROM_PACKAGE=1
+  --settings AzureKeyVault:ClientId=$appID AzureKeyVault:ClientSecret=$password AzureKeyVault:VaultName=$keyvaultName WEBSITE_RUN_FROM_PACKAGE=$packageLocation
 
 echo "Done!"
