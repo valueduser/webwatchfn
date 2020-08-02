@@ -13,6 +13,19 @@
 <html xmlns =\ 'http://www.w3.org/1999/xhtml\' lang=\ 'en-US\' prefix=\ 'og: http://ogp.me/ns#\'>
 
 <head profile =\ 'http://gmpg.org/xfn/11\'>
+    <link rel =\ 'stylesheet\' href=\ '//fonts.googleapis.com/css?family=Open+Sans:400,600,700%7COswald%3A400%2C300%7COpen+Sans%3A700%2C400%2C400i%7CRoboto%3A700%2C400\' />
+    <script type = 'text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js?ver=1.11.0'></script>
+    <script src =\ 'https://widgets.healcode.com/javascripts/healcode.js\' type=\ 'text/javascript\'></script>
+    <script src =\ 'https://MyWebPage.com/wp-content/cache/min/1/7653beb7a787e328b2a579345afcf04a.js\' data-minify=\ '1\'></script>
+    <meta http-equiv=\ 'Content-Type\' content=\ 'text/html; charset=UTF-8\' />
+    <meta name =\ 'viewport\' content=\ 'width=device-width, initial-scale=1\' />
+    <link rel =\ 'icon\' type=\ 'image/png\' href=\ 'https://MyWebPage.com/wp-content/themes/my_web_page/favicon/corporate-favicon.png\' />
+    <link href =\ 'https://MyWebPage.com/wp-content/themes/my_web_page/css/bootstrap.css\' rel=\ 'stylesheet\' type=\ 'text/css\' media=\ 'all\' />
+    <link rel =\ 'stylesheet\' href=\ 'https://MyWebPage.com/wp-content/themes/my_web_page/css/font-awesome.min.css\' type=\ 'text/css\' media=\ 'all\' />
+    <link rel =\ 'stylesheet\' href=\ 'https://MyWebPage.com/wp-content/themes/my_web_page/style.css\' type=\ 'text/css\' media=\ 'screen\' />
+    <link href =\ 'https://MyWebPage.com/wp-content/themes/my_web_page/css/owl.carousel.css\' rel=\ 'stylesheet\' type=\ 'text/css\' media=\ 'all\' />
+    <link href =\ 'https://MyWebPage.com/wp-content/themes/my_web_page/css/responsive.css\' rel=\ 'stylesheet\' type=\ 'text/css\' media=\ 'all\' />
+    <link rel =\ 'pingback\' href=\ 'https://MyWebPage.com/xmlrpc.php\' />
     <title>My Sick Web Page.biz.co.uk.jp.cn</title>
     <meta name =\ 'description\' content=\ 'tessssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssst!\'/>
     <meta property =\ 'og:locale\' content=\ 'en_US\' />
@@ -71,11 +84,11 @@
     <script type = 'text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jquery-migrate/1.4.1/jquery-migrate.min.js?ver=1.4.1'></script>
     <script type = 'text/javascript' >
 		nvar the_ajax_script = {\
-                'ajaxurl\':\'https:\\/\\/MyWebPage.com\\/wp-admin\\/admin-ajax.php\',\'postnonce\':\'12345678\'};\n/*  */
+                'ajaxurl\':\'https:\\/\\/MyWebPage.com\\/wp-admin\\/admin-ajax.php\',\'postnonce\':\'jklmnopqr\'};\n/*  */
     </script>
     <script type = 'text/javascript' >
 		nvar simcal_default_calendar = {\
-                'ajax_url\':\'\\/wp-admin\\/admin-ajax.php\',\'nonce\':\'abcdefgh\',\'locale\':\'en_US\',\'text_dir\':\'ltr\',\'months\':{\'full\':[\'January\',\'February\',\'March\',\'April\',\'May\',\'June\',\'July\',\'August\',\'September\',\'October\',\'November\',\'December\'],\'short\':[\'Jan\',\'Feb\',\'Mar\',\'Apr\',\'May\',\'Jun\',\'Jul\',\'Aug\',\'Sep\',\'Oct\',\'Nov\',\'Dec\']},\'days\':{\'full\':[\'Sunday\',\'Monday\',\'Tuesday\',\'Wednesday\',\'Thursday\',\'Friday\',\'Saturday\'],\'short\':[\'Sun\',\'Mon\',\'Tue\',\'Wed\',\'Thu\',\'Fri\',\'Sat\']},\'meridiem\':{\'AM\':\'AM\',\'am\':\'am\',\'PM\':\'PM\',\'pm\':\'pm\'}};\nvar simcal_default_calendar = {\'ajax_url\':\'\\/wp-admin\\/admin-ajax.php\',\'nonce\':\'abcdefgh\',\'locale\':\'en_US\',\'text_dir\':\'ltr\',\'months\':{\'full\':[\'January\',\'February\',\'March\',\'April\',\'May\',\'June\',\'July\',\'August\',\'September\',\'October\',\'November\',\'December\'],\'short\':[\'Jan\',\'Feb\',\'Mar\',\'Apr\',\'May\',\'Jun\',\'Jul\',\'Aug\',\'Sep\',\'Oct\',\'Nov\',\'Dec\']},\'days\':{\'full\':[\'Sunday\',\'Monday\',\'Tuesday\',\'Wednesday\',\'Thursday\',\'Friday\',\'Saturday\'],\'short\':[\'Sun\',\'Mon\',\'Tue\',\'Wed\',\'Thu\',\'Fri\',\'Sat\']},\'meridiem\':{\'AM\':\'AM\',\'am\':\'am\',\'PM\':\'PM\',\'pm\':\'pm\'}};\n/*  */
+                'ajax_url\':\'\\/wp-admin\\/admin-ajax.php\',\'nonce\':\'abcdefghi\',\'locale\':\'en_US\',\'text_dir\':\'ltr\',\'months\':{\'full\':[\'January\',\'February\',\'March\',\'April\',\'May\',\'June\',\'July\',\'August\',\'September\',\'October\',\'November\',\'December\'],\'short\':[\'Jan\',\'Feb\',\'Mar\',\'Apr\',\'May\',\'Jun\',\'Jul\',\'Aug\',\'Sep\',\'Oct\',\'Nov\',\'Dec\']},\'days\':{\'full\':[\'Sunday\',\'Monday\',\'Tuesday\',\'Wednesday\',\'Thursday\',\'Friday\',\'Saturday\'],\'short\':[\'Sun\',\'Mon\',\'Tue\',\'Wed\',\'Thu\',\'Fri\',\'Sat\']},\'meridiem\':{\'AM\':\'AM\',\'am\':\'am\',\'PM\':\'PM\',\'pm\':\'pm\'}};\nvar simcal_default_calendar = {\'ajax_url\':\'\\/wp-admin\\/admin-ajax.php\',\'nonce\':\'f45badb6c3\',\'locale\':\'en_US\',\'text_dir\':\'ltr\',\'months\':{\'full\':[\'January\',\'February\',\'March\',\'April\',\'May\',\'June\',\'July\',\'August\',\'September\',\'October\',\'November\',\'December\'],\'short\':[\'Jan\',\'Feb\',\'Mar\',\'Apr\',\'May\',\'Jun\',\'Jul\',\'Aug\',\'Sep\',\'Oct\',\'Nov\',\'Dec\']},\'days\':{\'full\':[\'Sunday\',\'Monday\',\'Tuesday\',\'Wednesday\',\'Thursday\',\'Friday\',\'Saturday\'],\'short\':[\'Sun\',\'Mon\',\'Tue\',\'Wed\',\'Thu\',\'Fri\',\'Sat\']},\'meridiem\':{\'AM\':\'AM\',\'am\':\'am\',\'PM\':\'PM\',\'pm\':\'pm\'}};\n/*  */
     </script>
 </body>
 
@@ -92,6 +105,19 @@
 <html xmlns =\ 'http://www.w3.org/1999/xhtml\' lang=\ 'en-US\' prefix=\ 'og: http://ogp.me/ns#\'>
 
 <head profile =\ 'http://gmpg.org/xfn/11\'>
+    <link rel =\ 'stylesheet\' href=\ '//fonts.googleapis.com/css?family=Open+Sans:400,600,700%7COswald%3A400%2C300%7COpen+Sans%3A700%2C400%2C400i%7CRoboto%3A700%2C400\' />
+    <script type = 'text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js?ver=1.11.0'></script>
+    <script src =\ 'https://widgets.healcode.com/javascripts/healcode.js\' type=\ 'text/javascript\'></script>
+    <script src =\ 'https://MyWebPage.com/wp-content/cache/min/1/7653beb7a787e328b2a579345afcf04a.js\' data-minify=\ '1\'></script>
+    <meta http-equiv=\ 'Content-Type\' content=\ 'text/html; charset=UTF-8\' />
+    <meta name =\ 'viewport\' content=\ 'width=device-width, initial-scale=1\' />
+    <link rel =\ 'icon\' type=\ 'image/png\' href=\ 'https://MyWebPage.com/wp-content/themes/my_web_page/favicon/corporate-favicon.png\' />
+    <link href =\ 'https://MyWebPage.com/wp-content/themes/my_web_page/css/bootstrap.css\' rel=\ 'stylesheet\' type=\ 'text/css\' media=\ 'all\' />
+    <link rel =\ 'stylesheet\' href=\ 'https://MyWebPage.com/wp-content/themes/my_web_page/css/font-awesome.min.css\' type=\ 'text/css\' media=\ 'all\' />
+    <link rel =\ 'stylesheet\' href=\ 'https://MyWebPage.com/wp-content/themes/my_web_page/style.css\' type=\ 'text/css\' media=\ 'screen\' />
+    <link href =\ 'https://MyWebPage.com/wp-content/themes/my_web_page/css/owl.carousel.css\' rel=\ 'stylesheet\' type=\ 'text/css\' media=\ 'all\' />
+    <link href =\ 'https://MyWebPage.com/wp-content/themes/my_web_page/css/responsive.css\' rel=\ 'stylesheet\' type=\ 'text/css\' media=\ 'all\' />
+    <link rel =\ 'pingback\' href=\ 'https://MyWebPage.com/xmlrpc.php\' />
     <title>My Sick Web Page.biz.co.uk.jp.cn</title>
     <meta name =\ 'description\' content=\ 'tessssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssst!\'/>
     <meta property =\ 'og:locale\' content=\ 'en_US\' />
@@ -150,18 +176,18 @@
     <script type = 'text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jquery-migrate/1.4.1/jquery-migrate.min.js?ver=1.4.1'></script>
     <script type = 'text/javascript' >
 		nvar the_ajax_script = {\
-                'ajaxurl\':\'https:\\/\\/MyWebPage.com\\/wp-admin\\/admin-ajax.php\',\'postnonce\':\'12345678\'};\n/*  */
+                'ajaxurl\':\'https:\\/\\/MyWebPage.com\\/wp-admin\\/admin-ajax.php\',\'postnonce\':\'996f8ce85a\'};\n/*  */
     </script>
     <script type = 'text/javascript' >
 		nvar simcal_default_calendar = {\
-                'ajax_url\':\'\\/wp-admin\\/admin-ajax.php\',\'nonce\':\'abcdefgh\',\'locale\':\'en_US\',\'text_dir\':\'ltr\',\'months\':{\'full\':[\'January\',\'February\',\'March\',\'April\',\'May\',\'June\',\'July\',\'August\',\'September\',\'October\',\'November\',\'December\'],\'short\':[\'Jan\',\'Feb\',\'Mar\',\'Apr\',\'May\',\'Jun\',\'Jul\',\'Aug\',\'Sep\',\'Oct\',\'Nov\',\'Dec\']},\'days\':{\'full\':[\'Sunday\',\'Monday\',\'Tuesday\',\'Wednesday\',\'Thursday\',\'Friday\',\'Saturday\'],\'short\':[\'Sun\',\'Mon\',\'Tue\',\'Wed\',\'Thu\',\'Fri\',\'Sat\']},\'meridiem\':{\'AM\':\'AM\',\'am\':\'am\',\'PM\':\'PM\',\'pm\':\'pm\'}};\nvar simcal_default_calendar = {\'ajax_url\':\'\\/wp-admin\\/admin-ajax.php\',\'nonce\':\'abcdefgh\',\'locale\':\'en_US\',\'text_dir\':\'ltr\',\'months\':{\'full\':[\'January\',\'February\',\'March\',\'April\',\'May\',\'June\',\'July\',\'August\',\'September\',\'October\',\'November\',\'December\'],\'short\':[\'Jan\',\'Feb\',\'Mar\',\'Apr\',\'May\',\'Jun\',\'Jul\',\'Aug\',\'Sep\',\'Oct\',\'Nov\',\'Dec\']},\'days\':{\'full\':[\'Sunday\',\'Monday\',\'Tuesday\',\'Wednesday\',\'Thursday\',\'Friday\',\'Saturday\'],\'short\':[\'Sun\',\'Mon\',\'Tue\',\'Wed\',\'Thu\',\'Fri\',\'Sat\']},\'meridiem\':{\'AM\':\'AM\',\'am\':\'am\',\'PM\':\'PM\',\'pm\':\'pm\'}};\n/*  */
+                'ajax_url\':\'\\/wp-admin\\/admin-ajax.php\',\'nonce\':\'abcdefghi\',\'locale\':\'en_US\',\'text_dir\':\'ltr\',\'months\':{\'full\':[\'January\',\'February\',\'March\',\'April\',\'May\',\'June\',\'July\',\'August\',\'September\',\'October\',\'November\',\'December\'],\'short\':[\'Jan\',\'Feb\',\'Mar\',\'Apr\',\'May\',\'Jun\',\'Jul\',\'Aug\',\'Sep\',\'Oct\',\'Nov\',\'Dec\']},\'days\':{\'full\':[\'Sunday\',\'Monday\',\'Tuesday\',\'Wednesday\',\'Thursday\',\'Friday\',\'Saturday\'],\'short\':[\'Sun\',\'Mon\',\'Tue\',\'Wed\',\'Thu\',\'Fri\',\'Sat\']},\'meridiem\':{\'AM\':\'AM\',\'am\':\'am\',\'PM\':\'PM\',\'pm\':\'pm\'}};\nvar simcal_default_calendar = {\'ajax_url\':\'\\/wp-admin\\/admin-ajax.php\',\'nonce\':\'f45badb6c3\',\'locale\':\'en_US\',\'text_dir\':\'ltr\',\'months\':{\'full\':[\'January\',\'February\',\'March\',\'April\',\'May\',\'June\',\'July\',\'August\',\'September\',\'October\',\'November\',\'December\'],\'short\':[\'Jan\',\'Feb\',\'Mar\',\'Apr\',\'May\',\'Jun\',\'Jul\',\'Aug\',\'Sep\',\'Oct\',\'Nov\',\'Dec\']},\'days\':{\'full\':[\'Sunday\',\'Monday\',\'Tuesday\',\'Wednesday\',\'Thursday\',\'Friday\',\'Saturday\'],\'short\':[\'Sun\',\'Mon\',\'Tue\',\'Wed\',\'Thu\',\'Fri\',\'Sat\']},\'meridiem\':{\'AM\':\'AM\',\'am\':\'am\',\'PM\':\'PM\',\'pm\':\'pm\'}};\n/*  */
     </script>
 </body>
 
 </html>";
 
 		public const string bigHtmlWithDifferentNonce =
-                    @"<!DOCTYPE HTML>
+			@"<!DOCTYPE HTML>
 < !--[if IE 7] >< html lang=\'en\' class=\'no-js ie7\'> <![endif]-->
 <!--[if IE 8 ]><html lang =\'en\' class=\'no-js ie8\'> <![endif]-->
 <!--[if IE 9 ]><html lang =\'en\' class=\'no-js ie9\'> <![endif]-->
@@ -171,6 +197,19 @@
 <html xmlns =\ 'http://www.w3.org/1999/xhtml\' lang=\ 'en-US\' prefix=\ 'og: http://ogp.me/ns#\'>
 
 <head profile =\ 'http://gmpg.org/xfn/11\'>
+    <link rel =\ 'stylesheet\' href=\ '//fonts.googleapis.com/css?family=Open+Sans:400,600,700%7COswald%3A400%2C300%7COpen+Sans%3A700%2C400%2C400i%7CRoboto%3A700%2C400\' />
+    <script type = 'text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js?ver=1.11.0'></script>
+    <script src =\ 'https://widgets.healcode.com/javascripts/healcode.js\' type=\ 'text/javascript\'></script>
+    <script src =\ 'https://MyWebPage.com/wp-content/cache/min/1/7653beb7a787e328b2a579345afcf04a.js\' data-minify=\ '1\'></script>
+    <meta http-equiv=\ 'Content-Type\' content=\ 'text/html; charset=UTF-8\' />
+    <meta name =\ 'viewport\' content=\ 'width=device-width, initial-scale=1\' />
+    <link rel =\ 'icon\' type=\ 'image/png\' href=\ 'https://MyWebPage.com/wp-content/themes/my_web_page/favicon/corporate-favicon.png\' />
+    <link href =\ 'https://MyWebPage.com/wp-content/themes/my_web_page/css/bootstrap.css\' rel=\ 'stylesheet\' type=\ 'text/css\' media=\ 'all\' />
+    <link rel =\ 'stylesheet\' href=\ 'https://MyWebPage.com/wp-content/themes/my_web_page/css/font-awesome.min.css\' type=\ 'text/css\' media=\ 'all\' />
+    <link rel =\ 'stylesheet\' href=\ 'https://MyWebPage.com/wp-content/themes/my_web_page/style.css\' type=\ 'text/css\' media=\ 'screen\' />
+    <link href =\ 'https://MyWebPage.com/wp-content/themes/my_web_page/css/owl.carousel.css\' rel=\ 'stylesheet\' type=\ 'text/css\' media=\ 'all\' />
+    <link href =\ 'https://MyWebPage.com/wp-content/themes/my_web_page/css/responsive.css\' rel=\ 'stylesheet\' type=\ 'text/css\' media=\ 'all\' />
+    <link rel =\ 'pingback\' href=\ 'https://MyWebPage.com/xmlrpc.php\' />
     <title>My Sick Web Page.biz.co.uk.jp.cn</title>
     <meta name =\ 'description\' content=\ 'tessssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssst!\'/>
     <meta property =\ 'og:locale\' content=\ 'en_US\' />
@@ -229,14 +268,14 @@
     <script type = 'text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jquery-migrate/1.4.1/jquery-migrate.min.js?ver=1.4.1'></script>
     <script type = 'text/javascript' >
 		nvar the_ajax_script = {\
-                'ajaxurl\':\'https:\\/\\/MyWebPage.com\\/wp-admin\\/admin-ajax.php\',\'postnonce\':\'01234567\'};\n/*  */
+                'ajaxurl\':\'https:\\/\\/MyWebPage.com\\/wp-admin\\/admin-ajax.php\',\'postnonce\':\'zxcvbnm\'};\n/*  */
     </script>
     <script type = 'text/javascript' >
 		nvar simcal_default_calendar = {\
-                'ajax_url\':\'\\/wp-admin\\/admin-ajax.php\',\'nonce\':\'absdfjkl\',\'locale\':\'en_US\',\'text_dir\':\'ltr\',\'months\':{\'full\':[\'January\',\'February\',\'March\',\'April\',\'May\',\'June\',\'July\',\'August\',\'September\',\'October\',\'November\',\'December\'],\'short\':[\'Jan\',\'Feb\',\'Mar\',\'Apr\',\'May\',\'Jun\',\'Jul\',\'Aug\',\'Sep\',\'Oct\',\'Nov\',\'Dec\']},\'days\':{\'full\':[\'Sunday\',\'Monday\',\'Tuesday\',\'Wednesday\',\'Thursday\',\'Friday\',\'Saturday\'],\'short\':[\'Sun\',\'Mon\',\'Tue\',\'Wed\',\'Thu\',\'Fri\',\'Sat\']},\'meridiem\':{\'AM\':\'AM\',\'am\':\'am\',\'PM\':\'PM\',\'pm\':\'pm\'}};\nvar simcal_default_calendar = {\'ajax_url\':\'\\/wp-admin\\/admin-ajax.php\',\'nonce\':\'abcdefgh\',\'locale\':\'en_US\',\'text_dir\':\'ltr\',\'months\':{\'full\':[\'January\',\'February\',\'March\',\'April\',\'May\',\'June\',\'July\',\'August\',\'September\',\'October\',\'November\',\'December\'],\'short\':[\'Jan\',\'Feb\',\'Mar\',\'Apr\',\'May\',\'Jun\',\'Jul\',\'Aug\',\'Sep\',\'Oct\',\'Nov\',\'Dec\']},\'days\':{\'full\':[\'Sunday\',\'Monday\',\'Tuesday\',\'Wednesday\',\'Thursday\',\'Friday\',\'Saturday\'],\'short\':[\'Sun\',\'Mon\',\'Tue\',\'Wed\',\'Thu\',\'Fri\',\'Sat\']},\'meridiem\':{\'AM\':\'AM\',\'am\':\'am\',\'PM\':\'PM\',\'pm\':\'pm\'}};\n/*  */
+                'ajax_url\':\'\\/wp-admin\\/admin-ajax.php\',\'nonce\':\'qwertyu\',\'locale\':\'en_US\',\'text_dir\':\'ltr\',\'months\':{\'full\':[\'January\',\'February\',\'March\',\'April\',\'May\',\'June\',\'July\',\'August\',\'September\',\'October\',\'November\',\'December\'],\'short\':[\'Jan\',\'Feb\',\'Mar\',\'Apr\',\'May\',\'Jun\',\'Jul\',\'Aug\',\'Sep\',\'Oct\',\'Nov\',\'Dec\']},\'days\':{\'full\':[\'Sunday\',\'Monday\',\'Tuesday\',\'Wednesday\',\'Thursday\',\'Friday\',\'Saturday\'],\'short\':[\'Sun\',\'Mon\',\'Tue\',\'Wed\',\'Thu\',\'Fri\',\'Sat\']},\'meridiem\':{\'AM\':\'AM\',\'am\':\'am\',\'PM\':\'PM\',\'pm\':\'pm\'}};\nvar simcal_default_calendar = {\'ajax_url\':\'\\/wp-admin\\/admin-ajax.php\',\'nonce\':\'asdfjkl\',\'locale\':\'en_US\',\'text_dir\':\'ltr\',\'months\':{\'full\':[\'January\',\'February\',\'March\',\'April\',\'May\',\'June\',\'July\',\'August\',\'September\',\'October\',\'November\',\'December\'],\'short\':[\'Jan\',\'Feb\',\'Mar\',\'Apr\',\'May\',\'Jun\',\'Jul\',\'Aug\',\'Sep\',\'Oct\',\'Nov\',\'Dec\']},\'days\':{\'full\':[\'Sunday\',\'Monday\',\'Tuesday\',\'Wednesday\',\'Thursday\',\'Friday\',\'Saturday\'],\'short\':[\'Sun\',\'Mon\',\'Tue\',\'Wed\',\'Thu\',\'Fri\',\'Sat\']},\'meridiem\':{\'AM\':\'AM\',\'am\':\'am\',\'PM\':\'PM\',\'pm\':\'pm\'}};\n/*  */
     </script>
 </body>
 
 </html>";
-    }
+	}
 }

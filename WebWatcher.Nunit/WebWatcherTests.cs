@@ -5,6 +5,8 @@ using WebWatcher.Nunit;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using static WebWatcher.WebWatcherFunction;
+using Newtonsoft.Json;
+using System;
 
 namespace WebWatcherTests
 {
@@ -30,9 +32,9 @@ namespace WebWatcherTests
 
         [TestCase("testHtml1", "testHtml2", DiffLib.DiffOperation.Modify, "1", "2")]
         [TestCase("testHtml2", "testHtml1", DiffLib.DiffOperation.Modify, "2", "1")]
-        [TestCase(TestConstants.bigHtmlWithNonce, TestConstants.bigHtmlWithDifferentNonce, DiffLib.DiffOperation.Modify, "1", "2")]
-		//[TestCase(TestConstants.bigHtmlWithNonce, TestConstants.bigHtmlWithRealDifference, DiffLib.DiffOperation.Modify, "2", "1" )]
-		public void GetDiff_Returns_Diff(string previousValue, string currentValue,
+        [TestCase(TestConstants.bigHtmlWithNonce, TestConstants.bigHtmlWithDifferentNonce, DiffLib.DiffOperation.Modify, "jkl", "zxcvbnn")] // jklmnopqr vs zxcvbnmn
+        //[TestCase(TestConstants.bigHtmlWithNonce, TestConstants.bigHtmlWithRealDifference, DiffLib.DiffOperation.Modify, "2", "1" )]
+        public void GetDiff_Returns_Diff(string previousValue, string currentValue,
             DiffLib.DiffOperation expectedOperation, string expectedCollection1, string expectedCollection2)
 		{
 
@@ -40,6 +42,9 @@ namespace WebWatcherTests
 			//string noChangeDiffHtml = $"<div style='font-family: courier;'></div>";
 			//string expectedDiffHtml = $"<div style='font-family: courier;'><div><span style='background-color: {Constants.lightRed};'>{expectedDiff[0]}</span><span style='background-color: {Constants.lightGreen};'>{expectedDiff[1]}</span><br></div></div>";
 			List<WebDiff> actualDiff = WebWatcherFunction.GetDiff(previousValue, currentValue, mockLogger);
+
+            string output = JsonConvert.SerializeObject(actualDiff);
+            Console.WriteLine(output);
 
             for(int i = 0; i < expectedDiff.Count; i++)
             {
