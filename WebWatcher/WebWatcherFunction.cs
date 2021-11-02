@@ -88,10 +88,15 @@ namespace WebWatcher
         {
             log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
+            string tenantId = System.Environment.GetEnvironmentVariable("TenantId", EnvironmentVariableTarget.Process);
+            string clientId = System.Environment.GetEnvironmentVariable("ClientId", EnvironmentVariableTarget.Process);
+            string clientSecret = System.Environment.GetEnvironmentVariable("ClientSecret", EnvironmentVariableTarget.Process);
 
             var credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
 
-            var secretClient = new SecretClient(vaultUri: new Uri("https://kv202111011016.vault.azure.net/"), credential: credential);// new DefaultAzureCredential());
+            string keyVaultUri = $"https://{System.Environment.GetEnvironmentVariable("KeyVaultUri", EnvironmentVariableTarget.Process)}.vault.azure.net/";
+
+            var secretClient = new SecretClient(vaultUri: new Uri(keyVaultUri), credential: credential);// new DefaultAzureCredential());
 
 
             KeyVaultSecret blobConnectionSecret = secretClient.GetSecret("BlobConnectionString");
