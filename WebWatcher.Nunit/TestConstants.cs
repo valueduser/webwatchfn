@@ -1,9 +1,9 @@
 ﻿namespace WebWatcher.Nunit
 {
-	class TestConstants
+    class TestConstants
     {
-		public const string bigHtmlWithNonce =
-			@"<!DOCTYPE HTML>
+        public const string bigHtmlWithNonce =
+            @"<!DOCTYPE HTML>
 < !--[if IE 7] >< html lang=\'en\' class=\'no-js ie7\'> <![endif]-->
 <!--[if IE 8 ]><html lang =\'en\' class=\'no-js ie8\'> <![endif]-->
 <!--[if IE 9 ]><html lang =\'en\' class=\'no-js ie9\'> <![endif]-->
@@ -94,8 +94,8 @@
 
 </html>";
 
-		public const string bigHtmlWithRealDifference =
-			@"<!DOCTYPE HTML>
+        public const string bigHtmlWithRealDifference =
+            @"<!DOCTYPE HTML>
 < !--[if IE 7] >< html lang=\'en\' class=\'no-js ie7\'> <![endif]-->
 <!--[if IE 8 ]><html lang =\'en\' class=\'no-js ie8\'> <![endif]-->
 <!--[if IE 9 ]><html lang =\'en\' class=\'no-js ie9\'> <![endif]-->
@@ -186,8 +186,8 @@
 
 </html>";
 
-		public const string bigHtmlWithDifferentNonce =
-			@"<!DOCTYPE HTML>
+        public const string bigHtmlWithDifferentNonce =
+            @"<!DOCTYPE HTML>
 < !--[if IE 7] >< html lang=\'en\' class=\'no-js ie7\'> <![endif]-->
 <!--[if IE 8 ]><html lang =\'en\' class=\'no-js ie8\'> <![endif]-->
 <!--[if IE 9 ]><html lang =\'en\' class=\'no-js ie9\'> <![endif]-->
@@ -277,5 +277,5 @@
 </body>
 
 </html>";
-	}
+    }
 }

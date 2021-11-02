@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Security.Cryptography;
-using System.Text;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using DiffLib;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage;
@@ -13,8 +9,13 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SendGrid;
 using SendGrid.Helpers.Mail;
-using DiffLib;
-using Microsoft.Extensions.Configuration;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Text;
 
 namespace WebWatcher
 {
@@ -81,34 +82,27 @@ namespace WebWatcher
         private static string _sendGridApiKey;
         private static string _blobConnectionString;
         private static string _containerName;
-       
 
         [FunctionName("WebWatcherFunction")]
-        public static void Run([TimerTrigger("0 */30 * * * *")]TimerInfo myTimer, ILogger log, ExecutionContext context)
+        public static void Run([TimerTrigger("0 */30 * * * *")] TimerInfo myTimer, ILogger log)
         {
             log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
-            log.LogInformation($"Building configuration...{DateTime.Now}");
 
-            var configBuilder = new ConfigurationBuilder()
-                .SetBasePath(context.FunctionAppDirectory)
-                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables();
+            var credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
 
-            var config = configBuilder.Build();
+            var secretClient = new SecretClient(vaultUri: new Uri("https://kv202111011016.vault.azure.net/"), credential: credential);// new DefaultAzureCredential());
 
-            configBuilder.AddAzureKeyVault(
-                $"https://{config["AzureKeyVault:VaultName"]}.vault.azure.net/",
-                config["AzureKeyVault:ClientId"],
-                config["AzureKeyVault:ClientSecret"]
-            );
 
-            config = configBuilder.Build();
-            
-            _blobConnectionString = config["BlobConnectionString"];
-            _sendGridApiKey = config["SendGridApiKey"];
-            _emailAddressTo = config["EmailTo"];
-            _containerName = config["ContainerName"];
+            KeyVaultSecret blobConnectionSecret = secretClient.GetSecret("BlobConnectionString");
+            KeyVaultSecret sendGridSecret = secretClient.GetSecret("SendGridApiKey");
+            KeyVaultSecret emailSecret = secretClient.GetSecret("EmailTo");
+            KeyVaultSecret containerSecret = secretClient.GetSecret("ContainerName");
+
+            _blobConnectionString = blobConnectionSecret.Value;
+            _sendGridApiKey = sendGridSecret.Value;
+            _emailAddressTo = emailSecret.Value;
+            _containerName = containerSecret.Value;
 
             List<Website> websites = ReadFromBlob(log);
 
@@ -139,6 +133,7 @@ namespace WebWatcher
                         log.LogInformation($"Site: {site.Url}. Old hash value: {site.MostRecentHashValue}.");
                         try
                         {
+                            List<WebDiff> diff = new List<WebDiff>();
                             using (HttpResponseMessage response = client.GetAsync(site.Url).Result)
                             {
                                 if (response.StatusCode == HttpStatusCode.OK)
@@ -154,24 +149,19 @@ namespace WebWatcher
                                             site.MostRecentHashValue = hashedValue;
                                             log.LogInformation($"{DateTime.Now}: {message}");
 
-                                            //If the most recent html is empty, then the entire page is an addition. 
+                                            //If the html is empty, then the entire page is an addition. 
                                             if (!String.IsNullOrEmpty(site.MostRecentHtmlContent) &&
                                                 !String.IsNullOrEmpty(currentHtml))
                                             {
-                                                GetDiff(site.MostRecentHtmlContent,
+                                                File.WriteAllText(@"C:\Users\valueduser\Desktop\current.html", currentHtml);
+                                                File.WriteAllText(@"C:\Users\valueduser\Desktop\previous.html", site.MostRecentHtmlContent);
+                                                diff = GetDiff(site.MostRecentHtmlContent,
                                                     currentHtml, log);
-                                                // string htmlDiff = GetDiff(site.MostRecentHtmlContent,
-                                                //     currentHtml, log);
-                                                // if (!htmlDiff.Contains("nonce"))
-                                                // {
-                                                    //if htmlDiff contains 'nonce', don't add it to the email body;
-                                                    // message += htmlDiff;
-                                                // }
                                             }
 
                                             site.MostRecentHtmlContent = currentHtml;
-
-                                            SendEmail(log, site.Url, message);
+                                            if (diff.Count > 0)
+                                                SendEmail(log, site.Url, message);
                                         }
                                         else
                                         {
@@ -203,105 +193,98 @@ namespace WebWatcher
 
         public static List<WebDiff> GetDiff(string previousHtml, string currentHtml, ILogger log)
         {
-            // var htmlDiff = new StringBuilder();
-            string[] previousHtmlArr = previousHtml.Split(
-                new[] { "\r\n", "\r", "\n" },
-                StringSplitOptions.None);
-            string[] currentHtmlArr = currentHtml.Split(
-                new[] { "\r\n", "\r", "\n" },
-                StringSplitOptions.None);
-
             List<WebDiff> diffCollection = new List<WebDiff>();
 
-            if (previousHtmlArr.Length > 0 && currentHtmlArr.Length > 0)
+            try
             {
-                IEnumerable<DiffSection> testsections = Diff.CalculateSections(previousHtmlArr, currentHtmlArr);
-                IEnumerable<DiffElement<string>> elements = Diff.AlignElements(previousHtmlArr, currentHtmlArr, testsections, new StringSimilarityDiffElementAligner());
+                string[] previousHtmlArr = previousHtml.Split(
+                    new[] { "\r\n", "\r", "\n" },
+                    StringSplitOptions.None);
+                string[] currentHtmlArr = currentHtml.Split(
+                    new[] { "\r\n", "\r", "\n" },
+                    StringSplitOptions.None);
 
-                // htmlDiff.Append("<div style='font-family: courier;'>");
 
-                Func<string, string> filter = input =>
-                    input.Replace(" ", Constants.nonBreakingSpace)
-                        .Replace("&", "&amp;")
-                        .Replace("<", "&lt;")
-                        .Replace(">", "&gt;");
-
-                foreach (var element in elements)
+                if (previousHtmlArr.Length > 0 && currentHtmlArr.Length > 0)
                 {
-                    log.LogInformation($"Diff eval: {element.ElementFromCollection2.Value}");
-                    DiffOperation prevDiffOperation = DiffOperation.Match;
-                    log.LogInformation($"{element.Operation}: {element.ElementFromCollection1.Value} vs {element.ElementFromCollection2.Value} ({element.ElementIndexFromCollection1.Value} vs {element.ElementIndexFromCollection2.Value})");
-                    
-                    switch (element.Operation)
+                    IEnumerable<DiffSection> allSections = Diff.CalculateSections(previousHtmlArr, currentHtmlArr);
+                    IEnumerable<DiffElement<string>> elements = Diff.AlignElements(previousHtmlArr, currentHtmlArr, allSections, new StringSimilarityDiffElementAligner());
+
+                    Func<string, string> filter = input =>
+                        input.Replace(" ", Constants.nonBreakingSpace)
+                            .Replace("&", "&amp;")
+                            .Replace("<", "&lt;")
+                            .Replace(">", "&gt;");
+
+                    foreach (DiffElement<string> element in elements)
                     {
-                        case DiffOperation.Insert:
-                            diffCollection.Add(new WebDiff(element.Operation, String.Empty, filter(element.ElementFromCollection2.Value)));
-                            // htmlDiff.Append($"<div style='background-color: {Constants.lightGreen};'>+{Constants.nonBreakingSpace}" + filter(element.ElementFromCollection2.Value) + Constants.endDiv);
-                            break;
-                        case DiffOperation.Delete:
-                            diffCollection.Add(new WebDiff(element.Operation, filter(element.ElementFromCollection1.Value), String.Empty));
-                            // htmlDiff.Append($"<div style='background-color: {Constants.lightRed};'>-{Constants.nonBreakingSpace}" + filter(element.ElementFromCollection1.Value) + Constants.endDiv);
-                            break;
-                        case DiffOperation.Replace:
-                        case DiffOperation.Modify:
-                            int ii1 = 0;
-                            int ii2 = 0;
-                            // htmlDiff.Append(Constants.beginDiv);
-                            IEnumerable<DiffSection> sections = Diff.CalculateSections(element.ElementFromCollection1.Value.ToCharArray(), element.ElementFromCollection2.Value.ToCharArray()).ToArray();
-                            foreach (var section in sections)
+                        if (element.ElementFromCollection1.HasValue && element.ElementFromCollection2.HasValue)
+                        {
+                            DiffOperation prevDiffOperation = DiffOperation.Match;
+
+                            switch (element.Operation)
                             {
-                                if (!section.IsMatch)
-                                {
-                                    //DEBUG
-                                    // htmlDiff.Append($"{element.Operation}: {element.ElementFromCollection1.Value} vs {element.ElementFromCollection2.Value} ({element.ElementIndexFromCollection1.Value} vs {element.ElementIndexFromCollection2.Value})");
-                                    diffCollection.Add(new WebDiff(
-                                        element.Operation,
-                                        filter(element.ElementFromCollection1.Value.Substring(ii1, section.LengthInCollection1)),
-                                        filter(element.ElementFromCollection2.Value.Substring(ii2, section.LengthInCollection2))
-                                     ));
-
-                                    //If the previous section was a match, add some context
-                                    if (prevDiffOperation == DiffOperation.Match && ii1 - 15 > 0)
+                                case DiffOperation.Insert:
+                                    diffCollection.Add(new WebDiff(element.Operation, String.Empty, filter(element.ElementFromCollection2.Value)));
+                                    break;
+                                case DiffOperation.Delete:
+                                    diffCollection.Add(new WebDiff(element.Operation, filter(element.ElementFromCollection1.Value), String.Empty));
+                                    break;
+                                case DiffOperation.Replace:
+                                case DiffOperation.Modify:
+                                    int ii1 = 0;
+                                    int ii2 = 0;
+                                    IEnumerable<DiffSection> sections = Diff.CalculateSections(element.ElementFromCollection1.Value.ToCharArray(), element.ElementFromCollection2.Value.ToCharArray()).ToArray();
+                                    foreach (var section in sections)
                                     {
-                                        // htmlDiff.Append($"{ii1 - 15}:");
+                                        if (!section.IsMatch)
+                                        {
+                                            diffCollection.Add(new WebDiff(
+                                                element.Operation,
+                                                filter(element.ElementFromCollection1.Value.Substring(ii1, section.LengthInCollection1)),
+                                                filter(element.ElementFromCollection2.Value.Substring(ii2, section.LengthInCollection2))
+                                             ));
+                                        }
+
+                                        ii1 += section.LengthInCollection1;
+                                        ii2 += section.LengthInCollection2;
                                     }
-                                    // htmlDiff.Append($"<span style='background-color: {Constants.lightRed};'>" + filter(element.ElementFromCollection1.Value.Substring(ii1, section.LengthInCollection1)) + Constants.endSpan);
-                                    // htmlDiff.Append($"<span style='background-color: {Constants.lightGreen};'>" + filter(element.ElementFromCollection2.Value.Substring(ii2, section.LengthInCollection2)) + Constants.endSpan);
 
-                                    //TODO: Add trailing context 
-                                    // htmlDiff.Append("<br>");
-                                }
-
-                                ii1 += section.LengthInCollection1;
-                                ii2 += section.LengthInCollection2;
+                                    break;
+                                case DiffOperation.Match:
+                                    if (element.ElementFromCollection1.Value.Equals(element.ElementFromCollection2.Value))
+                                        break;
+                                    else
+                                    {
+                                        log.LogError($"FALSE MATCH? '{element.ElementFromCollection1.Value}' at {element.ElementIndexFromCollection1} does not match '{element.ElementFromCollection2.Value}' at {element.ElementIndexFromCollection2}");
+                                        break;
+                                    }
+                                default:
+                                    log.LogError($"Something went wrong. {element.Operation}");
+                                    break;
                             }
-
-                            // htmlDiff.Append(Constants.endDiv);
-                            break;
-                        case DiffOperation.Match:
-                            break;
-                        default:
-                            log.LogError($"Something went wrong. {element.Operation}");
-                            break;
+                            prevDiffOperation = element.Operation;
+                        }
                     }
-                    prevDiffOperation = element.Operation;
+                    log.LogInformation("Done calculating diffs...");
                 }
-                // htmlDiff.Append(Constants.endDiv);
+                else
+                {
+                    string errorText = $"Unable to calculate diff. Previous HTML split length: {previousHtmlArr.Length}. Current HTML split length: {currentHtmlArr.Length}";
+                    log.LogError($"{ DateTime.Now}: {errorText}");
+                }
             }
-            else
+            catch (SystemException ex)
             {
-                string errorText = $"Unable to calculate diff. Previous HTML split length: {previousHtmlArr.Length}. Current HTML split length: {currentHtmlArr.Length}";
-                log.LogError($"{ DateTime.Now}: {errorText}");
-                // htmlDiff.Append("Error: " + errorText);
+                log.LogError($"{ DateTime.Now}: {ex.Message}");
             }
-            // return htmlDiff.ToString();
             return diffCollection;
         }
 
         private static string HashWebData(string data)
         {
             string hashedValue;
-            using (var md5 = MD5.Create())
+            using (var md5 = System.Security.Cryptography.MD5.Create())
             {
                 byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(data);
                 hashedValue = ByteArrayToString(md5.ComputeHash(inputBytes));
@@ -313,7 +296,7 @@ namespace WebWatcher
         {
             CloudBlockBlob blob = GetBlobConnection(log);
 
-            RootObject root = new RootObject { websites = list};
+            RootObject root = new RootObject { websites = list };
 
             string websitesElement = JsonConvert.SerializeObject(root);
 

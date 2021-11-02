@@ -1,12 +1,12 @@
-using NUnit.Framework;
+using Microsoft.Extensions.Logging;
 using Moq;
+using Newtonsoft.Json;
+using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 using WebWatcher;
 using WebWatcher.Nunit;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
 using static WebWatcher.WebWatcherFunction;
-using Newtonsoft.Json;
-using System;
 
 namespace WebWatcherTests
 {
@@ -36,20 +36,20 @@ namespace WebWatcherTests
         //[TestCase(TestConstants.bigHtmlWithNonce, TestConstants.bigHtmlWithRealDifference, DiffLib.DiffOperation.Modify, "2", "1" )]
         public void GetDiff_Returns_Diff(string previousValue, string currentValue,
             DiffLib.DiffOperation expectedOperation, string expectedCollection1, string expectedCollection2)
-		{
+        {
 
             List<WebDiff> expectedDiff = new List<WebDiff> { new WebDiff(expectedOperation, expectedCollection1, expectedCollection2) };
-			//string noChangeDiffHtml = $"<div style='font-family: courier;'></div>";
-			//string expectedDiffHtml = $"<div style='font-family: courier;'><div><span style='background-color: {Constants.lightRed};'>{expectedDiff[0]}</span><span style='background-color: {Constants.lightGreen};'>{expectedDiff[1]}</span><br></div></div>";
-			List<WebDiff> actualDiff = WebWatcherFunction.GetDiff(previousValue, currentValue, mockLogger);
+            //string noChangeDiffHtml = $"<div style='font-family: courier;'></div>";
+            //string expectedDiffHtml = $"<div style='font-family: courier;'><div><span style='background-color: {Constants.lightRed};'>{expectedDiff[0]}</span><span style='background-color: {Constants.lightGreen};'>{expectedDiff[1]}</span><br></div></div>";
+            List<WebDiff> actualDiff = WebWatcherFunction.GetDiff(previousValue, currentValue, mockLogger);
 
             string output = JsonConvert.SerializeObject(actualDiff);
             Console.WriteLine(output);
 
-            for(int i = 0; i < expectedDiff.Count; i++)
+            for (int i = 0; i < expectedDiff.Count; i++)
             {
                 Assert.IsTrue(expectedDiff[i].Equals(actualDiff[i]));
             }
         }
-	}
+    }
 }
