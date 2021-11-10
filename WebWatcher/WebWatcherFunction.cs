@@ -158,8 +158,6 @@ namespace WebWatcher
                                             if (!String.IsNullOrEmpty(site.MostRecentHtmlContent) &&
                                                 !String.IsNullOrEmpty(currentHtml))
                                             {
-                                                File.WriteAllText(@"C:\Users\valueduser\Desktop\current.html", currentHtml);
-                                                File.WriteAllText(@"C:\Users\valueduser\Desktop\previous.html", site.MostRecentHtmlContent);
                                                 diff = GetDiff(site.MostRecentHtmlContent,
                                                     currentHtml, log);
                                             }
