@@ -22,7 +22,8 @@ servicePrincipalName="sp"$dt
 
 echo "Creating Azure resources..."
 
-az login --service-principal -u $appID --password $password --tenant $tenant
+az login 
+
 echo "Creating a service principal..."
 sp=`az ad sp create-for-rbac --name $resourceGroupName"sp"`
 
@@ -102,9 +103,9 @@ az functionapp create \
   --resource-group $resourceGroupName \
   --functions-version 4
 
-echo "Building and publishing the function project" $functionProjectLocation"/WebWatcher.csproj..."
-dotnet build $functionProjectLocation --configuration Release
-cd $functionProjectLocation"/bin/Release/net6.0/"
+echo "Building and publishing the function project" $functionProjectLocation"WebWatcher.csproj..."
+dotnet build $functionProjectLocation"WebWatcher.csproj" --configuration Release
+cd $functionProjectLocation"bin/Release/net6.0/"
 zip -r $functionAppName.zip * 
 
 az storage container create \
@@ -145,12 +146,18 @@ packageLocation="https://$storageAccountName.blob.core.windows.net/$functionCont
 echo "Parsing keyvault service principal..."
 clientId=`cut -d "," -f 3 <<< $sp`
 clientId=`cut -d ":" -f 2 <<< $clientId`
+clientId=`tr -d '"' <<< $clientId`
 clientSecret=`cut -d "," -f 4 <<< $sp`
 clientSecret=`cut -d ":" -f 2 <<< $clientSecret`
+clientSecret=`tr -d '"' <<< $clientSecret`
+
+echo "Setting KeyVault access policy..."
+az keyvault set-policy --name $keyvaultName --spn $clientId --secret-permissions get list
+
 echo "Updating the app settings..."
 az functionapp config appsettings set \
   --name $functionAppName \
   --resource-group $resourceGroupName \
-  --settings "WEBSITE_RUN_FROM_PACKAGE=$packageLocation TenantId=$tenant ClientId=$clientId ClientSecret=$clientSecret KeyVaultUri=$keyvaultName"
+  --settings "WEBSITE_RUN_FROM_PACKAGE=$packageLocation" "TenantId=$tenant" "ClientId=$clientId" "ClientSecret=$clientSecret" "KeyVaultUri=$keyvaultName"
 
 echo "Done!"

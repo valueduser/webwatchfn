@@ -150,7 +150,7 @@ namespace WebWatcher
                                         if (!hashedValue.Equals(site.MostRecentHashValue))
                                         {
                                             string message =
-                                                $"Site: {site.Url} has been modified. \nOld hash: {site.MostRecentHashValue} \nNew hash: {hashedValue}. \n\n";
+                                                $"Site: {site.Url} has been modified. \nOld hash: {site.MostRecentHashValue}.\n New hash: {hashedValue}. \n\n";
                                             site.MostRecentHashValue = hashedValue;
                                             log.LogInformation($"{DateTime.Now}: {message}");
 
