@@ -1,6 +1,7 @@
 # webwatchfn
 An Azure Function to monitor HTML pages for updates and notify a user with a diff of the changes.
 
+[![Build Status](https://app.travis-ci.com/valueduser/webwatchfn.svg?branch=master)](https://app.travis-ci.com/valueduser/webwatchfn)
 [![CodeQL](https://github.com/valueduser/webwatchfn/actions/workflows/codeql-analysis.yml/badge.svg?branch=master)](https://github.com/valueduser/webwatchfn/actions/workflows/codeql-analysis.yml)
 
 To deploy to Azure:
