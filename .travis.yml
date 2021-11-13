@@ -1,0 +1,7 @@
+language: csharp
+solution: WebWatcher.sln
+dotnet: 6.0.100
+script:
+ - dotnet restore
+ - dotnet build
+ - dotnet test
